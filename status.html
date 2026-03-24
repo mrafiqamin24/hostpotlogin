@@ -9,27 +9,25 @@
 
   <style>
     :root{
-      --bg-main:#071226;
-      --bg-secondary:#0a1730;
-      --card-bg:rgba(7,18,38,.74);
-      --card-border:rgba(255,255,255,.09);
+      --bg-main:#08111f;
+      --bg-secondary:#0d1b32;
+      --card-bg:#101c33;
+      --card-border:rgba(255,255,255,.08);
       --line:rgba(255,255,255,.08);
       --text:#eef4ff;
       --text-soft:#9fb3d9;
-      --text-bright:#f5f8ff;
+      --text-bright:#ffffff;
 
       --blue-1:#4b8df8;
       --blue-2:#3d7ff0;
-      --cyan:#67e8f9;
       --green:#22c55e;
       --yellow:#facc15;
       --red:#ef4444;
-      --purple:#a855f7;
 
-      --shadow:0 20px 60px rgba(0,0,0,.35);
-      --radius-lg:28px;
-      --radius-md:24px;
-      --radius-sm:20px;
+      --shadow:0 14px 34px rgba(0,0,0,.28);
+      --radius-lg:26px;
+      --radius-md:20px;
+      --radius-sm:18px;
     }
 
     *{
@@ -47,15 +45,14 @@
     body{
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       min-height:100vh;
-      min-height:100dvh;
       color:var(--text);
       background:
-        radial-gradient(circle at top center, rgba(78,140,255,.18), transparent 30%),
+        radial-gradient(circle at top, rgba(75,141,248,.12), transparent 28%),
         linear-gradient(180deg, var(--bg-main), var(--bg-secondary));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:20px;
+      padding:16px;
       overflow-x:hidden;
       line-height:1.5;
     }
@@ -67,90 +64,17 @@
 
     .wrapper{
       width:100%;
-      max-width:420px;
-      position:relative;
-    }
-
-    .glow-orbit{
-      position:absolute;
-      inset:-60px;
-      z-index:0;
-      pointer-events:none;
-      filter:blur(30px);
-      animation:orbitSpin 16s linear infinite;
-    }
-
-    .glow-orbit::before,
-    .glow-orbit::after{
-      content:"";
-      position:absolute;
-      border-radius:50%;
-    }
-
-    .glow-orbit::before{
-      width:220px;
-      height:220px;
-      top:0;
-      left:5%;
-      background:rgba(59,130,246,.35);
-      box-shadow:
-        0 0 60px rgba(59,130,246,.35),
-        0 0 120px rgba(59,130,246,.24);
-      animation:pulseOne 3.5s ease-in-out infinite;
-    }
-
-    .glow-orbit::after{
-      width:180px;
-      height:180px;
-      right:5%;
-      bottom:0;
-      background:rgba(168,85,247,.35);
-      box-shadow:
-        0 0 60px rgba(168,85,247,.35),
-        0 0 120px rgba(168,85,247,.24);
-      animation:pulseTwo 4s ease-in-out infinite;
-    }
-
-    .scan-line{
-      position:absolute;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      overflow:hidden;
-      border-radius:var(--radius-lg);
-    }
-
-    .scan-line::before{
-      content:"";
-      position:absolute;
-      top:0;
-      left:-20%;
-      width:140%;
-      height:2px;
-      background:linear-gradient(
-        90deg,
-        transparent,
-        rgba(96,165,250,.92),
-        rgba(168,85,247,.85),
-        transparent
-      );
-      box-shadow:
-        0 0 12px rgba(96,165,250,.65),
-        0 0 22px rgba(168,85,247,.35);
-      animation:scanDown 4.8s linear infinite;
+      max-width:400px;
     }
 
     .card{
-      position:relative;
-      z-index:1;
       width:100%;
       background:var(--card-bg);
       border:1px solid var(--card-border);
       border-radius:var(--radius-lg);
       box-shadow:var(--shadow);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      padding:28px 20px 20px;
+      padding:24px 18px 18px;
+      position:relative;
       overflow:hidden;
     }
 
@@ -158,44 +82,30 @@
       content:"";
       position:absolute;
       inset:0;
-      border-radius:inherit;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), transparent 24%);
       pointer-events:none;
-    }
-
-    .card::after{
-      content:"";
-      position:absolute;
-      inset:0;
       border-radius:inherit;
-      pointer-events:none;
-      border:1px solid rgba(96,165,250,.16);
-      box-shadow:
-        inset 0 0 18px rgba(96,165,250,.06),
-        0 0 18px rgba(96,165,250,.05);
+      background:linear-gradient(180deg, rgba(255,255,255,.035), transparent 28%);
     }
 
     .brand{
+      text-align:center;
+      margin-bottom:20px;
       position:relative;
       z-index:1;
-      text-align:center;
-      margin-bottom:22px;
     }
 
     .logo-wrap{
-      width:92px;
-      height:92px;
-      margin:0 auto 14px;
-      border-radius:22px;
+      width:84px;
+      height:84px;
+      margin:0 auto 12px;
+      border-radius:20px;
       display:flex;
       align-items:center;
       justify-content:center;
+      background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 8px 18px rgba(0,0,0,.16);
       overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.14),
-        0 14px 30px rgba(79,140,255,.22),
-        0 0 30px rgba(103,232,249,.08);
     }
 
     .logo{
@@ -206,59 +116,59 @@
     }
 
     .brand h1{
-      font-size:1.45rem;
+      font-size:1.3rem;
       font-weight:800;
-      letter-spacing:.2px;
       color:var(--text-bright);
-      text-shadow:0 2px 0 rgba(0,0,0,.25);
+      letter-spacing:.2px;
       overflow-wrap:anywhere;
     }
 
-    .online-toast{
-      position:fixed;
-      top:18px;
-      left:18px;
-      z-index:10;
+    .online-badge{
       display:flex;
       align-items:center;
-      gap:10px;
-      padding:10px 14px;
+      justify-content:center;
+      gap:8px;
+      width:fit-content;
+      max-width:100%;
+      margin:0 auto 16px;
+      padding:8px 12px;
       border-radius:999px;
-      background:rgba(8,20,40,.72);
-      border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
+      background:rgba(34,197,94,.10);
+      border:1px solid rgba(34,197,94,.20);
       color:#dcfce7;
-      font-size:.95rem;
+      font-size:.88rem;
+      font-weight:600;
+      text-align:center;
+      position:relative;
+      z-index:1;
+      transition:opacity .35s ease, transform .35s ease, margin .35s ease, padding .35s ease;
+    }
+
+    .online-badge.hide{
       opacity:0;
-      animation:onlineToast 5s ease forwards;
+      transform:translateY(-6px);
+      pointer-events:none;
     }
 
     .online-dot{
-      width:10px;
-      height:10px;
+      width:9px;
+      height:9px;
       border-radius:50%;
       background:var(--green);
-      box-shadow:0 0 14px rgba(34,197,94,.85);
       flex:0 0 auto;
     }
 
     .alert-box{
-      position:fixed;
-      top:18px;
-      right:18px;
-      z-index:11;
-      max-width:320px;
-      padding:14px 16px;
-      border-radius:18px;
-      background:rgba(239,68,68,.16);
-      border:1px solid rgba(239,68,68,.28);
-      color:#ffe1e5;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      box-shadow:0 18px 40px rgba(0,0,0,.24);
       display:none;
-      animation:alertIn .35s ease;
+      margin-bottom:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(239,68,68,.12);
+      border:1px solid rgba(239,68,68,.22);
+      color:#ffe1e5;
+      font-size:.9rem;
+      position:relative;
+      z-index:1;
     }
 
     .alert-box.show{
@@ -266,110 +176,95 @@
     }
 
     .time-box{
-      position:relative;
-      z-index:1;
-      margin:8px 0 22px;
-      padding:24px 16px;
+      margin:8px 0 20px;
+      padding:22px 14px;
       border:1px solid var(--line);
       border-radius:var(--radius-md);
       text-align:center;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
-        rgba(5,14,30,.35);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.03),
-        0 0 0 1px rgba(255,255,255,.015);
+      background:rgba(255,255,255,.025);
+      position:relative;
+      z-index:1;
     }
 
     .time-box .label{
-      font-size:.98rem;
-      color:#f0f6ff;
-      margin-bottom:10px;
+      font-size:.96rem;
+      color:#dfeaff;
+      margin-bottom:8px;
     }
 
     .time-box .time{
-      font-size:clamp(1.9rem, 6vw, 3rem);
+      font-size:clamp(1.8rem, 6vw, 2.8rem);
       font-weight:900;
       line-height:1.1;
-      letter-spacing:-1px;
-      text-shadow:0 2px 0 rgba(0,0,0,.18);
-      transition:color .25s ease, text-shadow .25s ease;
+      letter-spacing:-.8px;
       overflow-wrap:anywhere;
     }
 
     .time-box.safe .time{
       color:var(--green);
-      text-shadow:0 0 10px rgba(34,197,94,.22), 0 2px 0 rgba(0,0,0,.18);
     }
 
     .time-box.warn .time{
       color:var(--yellow);
-      text-shadow:0 0 10px rgba(250,204,21,.18), 0 2px 0 rgba(0,0,0,.18);
     }
 
     .time-box.danger .time{
       color:var(--red);
-      text-shadow:0 0 12px rgba(239,68,68,.24), 0 2px 0 rgba(0,0,0,.18);
-      animation:dangerPulse 1.1s ease-in-out infinite;
     }
 
     .rows{
+      margin-top:4px;
       position:relative;
       z-index:1;
-      margin-top:6px;
     }
 
     .row{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:16px;
-      padding:13px 0;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      font-size:.96rem;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      font-size:.95rem;
     }
 
     .row:last-child{
       border-bottom:none;
     }
 
-    .row .left,
-    .row .right{
-      font-weight:500;
-      overflow-wrap:anywhere;
-    }
-
     .row .left{
       flex:1;
-      text-align:left;
-      color:#dce7ff;
+      color:#d7e5ff;
+      font-weight:500;
+      min-width:0;
     }
 
     .row .right{
       flex:1;
-      max-width:58%;
+      max-width:56%;
       text-align:right;
       color:#ffffff;
+      font-weight:600;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      min-width:0;
     }
 
     .package-box{
+      margin-top:18px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
       position:relative;
       z-index:1;
-      margin-top:18px;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:20px;
-      padding:16px 14px;
-      background:rgba(255,255,255,.04);
-      box-shadow:
-        0 0 12px rgba(59,130,246,.15) inset,
-        0 8px 24px rgba(0,0,0,.10);
     }
 
     .package-title{
       display:flex;
       align-items:center;
       gap:8px;
-      margin-bottom:10px;
+      margin-bottom:8px;
       font-size:.95rem;
       font-weight:800;
       color:var(--text-bright);
@@ -377,19 +272,15 @@
 
     .package-list{
       list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
     }
 
     .package-list li{
-      position:relative;
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:12px;
-      padding:10px 0 10px 18px;
-      border-bottom:1px solid rgba(255,255,255,.07);
+      padding:9px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);
       font-size:.92rem;
     }
 
@@ -397,25 +288,10 @@
       border-bottom:none;
     }
 
-    .package-list li::before{
-      content:"";
-      position:absolute;
-      left:0;
-      top:50%;
-      transform:translateY(-50%);
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background:var(--blue-1);
-      box-shadow:
-        0 0 6px var(--blue-1),
-        0 0 12px var(--blue-1);
-    }
-
     .package-name{
-      flex:1;
       color:#dfeaff;
       font-weight:500;
+      min-width:0;
     }
 
     .package-price{
@@ -423,82 +299,63 @@
       font-weight:700;
       text-align:right;
       white-space:nowrap;
+      flex-shrink:0;
     }
 
     .actions{
+      margin-top:20px;
       position:relative;
       z-index:1;
-      margin-top:22px;
-    }
-
-    .actions form{
-      margin:0;
     }
 
     .btn{
-      position:relative;
-      overflow:hidden;
       width:100%;
-      min-height:56px;
-      padding:0 20px;
+      min-height:54px;
       border:none;
-      border-radius:18px;
+      border-radius:16px;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      text-decoration:none;
+      padding:0 18px;
+      cursor:pointer;
       font-size:1rem;
       font-weight:800;
-      line-height:1;
-      white-space:nowrap;
-      cursor:pointer;
-      transition:transform .2s ease, box-shadow .25s ease, filter .25s ease;
+      color:#fff;
+      background:linear-gradient(135deg, var(--blue-1), var(--blue-2));
+      box-shadow:0 10px 22px rgba(44,98,193,.24);
       appearance:none;
       -webkit-appearance:none;
+      position:relative;
+      overflow:hidden;
     }
 
     .btn::before{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.28) 48%, transparent 75%);
+      background:linear-gradient(
+        115deg,
+        transparent 20%,
+        rgba(255,255,255,.28) 48%,
+        transparent 75%
+      );
       transform:translateX(-130%);
-    }
-
-    .btn:hover::before{
-      animation:shine .85s ease;
-    }
-
-    .btn:hover{
-      transform:translateY(-2px);
+      animation:btnShine 2.8s linear infinite;
     }
 
     .btn:active{
       transform:scale(.985);
     }
 
-    .btn-blue{
-      color:#fff;
-      background:linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow:
-        0 0 18px rgba(73,136,248,.38),
-        0 14px 28px rgba(44,98,193,.30);
-    }
-
-    .btn-blue:hover{
-      box-shadow:
-        0 0 28px rgba(73,136,248,.55),
-        0 16px 32px rgba(44,98,193,.36);
-      filter:brightness(1.03);
-    }
-
     .marquee-wrap{
+      margin-top:16px;
+      width:100%;
+      overflow:hidden;
       position:relative;
       z-index:1;
-      width:100%;
-      margin-top:16px;
-      overflow:hidden;
+      border-top:1px solid rgba(255,255,255,.07);
+      padding-top:12px;
     }
 
     .marquee{
@@ -510,26 +367,20 @@
     .marquee span{
       display:inline-block;
       padding-left:100%;
-      font-size:.9rem;
-      color:#f3f7ff;
-      animation:marquee 15s linear infinite;
+      font-size:.88rem;
+      color:#dfeaff;
+      animation:marquee 18s linear infinite;
       will-change:transform;
     }
 
-    .footer{
-      position:relative;
-      z-index:1;
-      margin-top:18px;
-      padding-top:12px;
-      border-top:1px solid rgba(255,255,255,.08);
+    .footer-note{
+      margin-top:14px;
       text-align:center;
       font-size:.82rem;
       color:var(--text-soft);
-      letter-spacing:.3px;
-    }
-
-    @keyframes shine{
-      to{ transform:translateX(130%); }
+      line-height:1.5;
+      position:relative;
+      z-index:1;
     }
 
     @keyframes marquee{
@@ -537,149 +388,48 @@
       100%{ transform:translateX(-100%); }
     }
 
-    @keyframes onlineToast{
-      0%{
-        opacity:0;
-        transform:translateY(-10px);
-      }
-      10%{
-        opacity:1;
-        transform:translateY(0);
-      }
-      85%{
-        opacity:1;
-        transform:translateY(0);
-      }
-      100%{
-        opacity:0;
-        transform:translateY(-10px);
-      }
-    }
-
-    @keyframes alertIn{
-      from{
-        opacity:0;
-        transform:translateY(-10px);
-      }
-      to{
-        opacity:1;
-        transform:translateY(0);
-      }
-    }
-
-    @keyframes dangerPulse{
-      0%,100%{ opacity:1; }
-      50%{ opacity:.75; }
-    }
-
-    @keyframes orbitSpin{
-      0%{ transform:rotate(0deg); }
-      100%{ transform:rotate(360deg); }
-    }
-
-    @keyframes pulseOne{
-      0%,100%{
-        transform:scale(1);
-        opacity:.72;
-      }
-      50%{
-        transform:scale(1.15);
-        opacity:1;
-      }
-    }
-
-    @keyframes pulseTwo{
-      0%,100%{
-        transform:scale(1);
-        opacity:.68;
-      }
-      50%{
-        transform:scale(1.18);
-        opacity:1;
-      }
-    }
-
-    @keyframes scanDown{
-      0%{
-        top:-10%;
-        opacity:0;
-      }
-      10%{
-        opacity:1;
-      }
-      90%{
-        opacity:1;
-      }
-      100%{
-        top:110%;
-        opacity:0;
-      }
-    }
-
-    @media (max-width:640px){
-      body{
-        padding:14px;
-      }
-
-      .card{
-        border-radius:24px;
-        padding:24px 18px 18px;
-      }
-
-      .card::before,
-      .card::after,
-      .scan-line{
-        border-radius:24px;
-      }
-
-      .logo-wrap{
-        width:78px;
-        height:78px;
-        border-radius:20px;
-      }
-
-      .time-box{
-        border-radius:20px;
-        padding:20px 14px;
-        margin-bottom:20px;
-      }
-
-      .btn{
-        min-height:54px;
-      }
-
-      .footer{
-        font-size:.8rem;
-        line-height:1.6;
-      }
-
-      .online-toast,
-      .alert-box{
-        left:14px;
-        right:14px;
-        max-width:none;
-      }
-
-      .alert-box{
-        top:70px;
-      }
+    @keyframes btnShine{
+      0%{ transform:translateX(-130%); }
+      45%{ transform:translateX(130%); }
+      100%{ transform:translateX(130%); }
     }
 
     @media (max-width:420px){
-      .card{
-        border-radius:var(--radius-sm);
-        padding:22px 16px 18px;
+      body{
+        padding:12px;
       }
 
-      .card::before,
-      .card::after,
-      .scan-line{
+      .wrapper{
+        max-width:100%;
+      }
+
+      .card{
         border-radius:var(--radius-sm);
+        padding:22px 16px 16px;
+      }
+
+      .logo-wrap{
+        width:76px;
+        height:76px;
+        border-radius:18px;
+      }
+
+      .brand h1{
+        font-size:1.16rem;
+      }
+
+      .online-badge{
+        font-size:.84rem;
+        padding:8px 10px;
+      }
+
+      .time-box{
+        padding:18px 12px;
       }
 
       .row{
         gap:10px;
-        padding:12px 0;
+        font-size:.92rem;
       }
 
       .row .right{
@@ -688,47 +438,89 @@
       }
 
       .package-list li{
-        gap:10px;
         font-size:.9rem;
+      }
+
+      .btn{
+        min-height:52px;
       }
 
       .marquee span{
         font-size:.84rem;
       }
+
+      .footer-note{
+        font-size:.78rem;
+      }
+    }
+
+    @media (max-width:340px){
+      .card{
+        padding:20px 14px 15px;
+      }
+
+      .brand h1{
+        font-size:1.06rem;
+      }
+
+      .row{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .row .right{
+        max-width:100%;
+        width:100%;
+        text-align:left;
+      }
+
+      .package-list li{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .package-price{
+        white-space:normal;
+        text-align:left;
+      }
     }
 
     @media (prefers-reduced-motion: reduce){
-      *,
-      *::before,
-      *::after{
-        animation:none !important;
-        transition:none !important;
-        scroll-behavior:auto !important;
+      .marquee span{
+        animation:none;
+        padding-left:0;
+        white-space:normal;
+      }
+
+      .btn::before{
+        animation:none;
+      }
+
+      .online-badge{
+        transition:none;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="online-toast">
-    <span class="online-dot"></span>
-    <span>Anda sedang online</span>
-  </div>
-
-  <div class="alert-box" id="timeAlert">
-    Waktu voucher kamu tinggal 5 menit. Siap-siap isi ulang ya.
-  </div>
-
   <div class="wrapper">
-    <div class="glow-orbit"></div>
-    <div class="scan-line"></div>
-
     <div class="card">
+
       <div class="brand">
         <div class="logo-wrap">
           <img src="img/Home.Net.png" alt="Home.Net" class="logo" />
         </div>
         <h1>Selamat datang di Home.Net</h1>
+      </div>
+
+      <div class="online-badge" id="onlineBadge">
+        <span class="online-dot"></span>
+        <span>Anda sedang online</span>
+      </div>
+
+      <div class="alert-box" id="timeAlert">
+        Waktu voucher kamu tinggal 5 menit. Siap-siap isi ulang ya.
       </div>
 
       <div class="time-box safe" id="timeBox">
@@ -794,8 +586,8 @@
       </div>
 
       <div class="actions">
-        <form action="$(link-logout)" method="post">
-          <button class="btn btn-blue" type="submit">
+        <form action="$(link-logout)" method="post" id="logoutForm">
+          <button class="btn" type="submit">
             <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>
           </button>
@@ -808,7 +600,7 @@
         </div>
       </div>
 
-      <div class="footer">
+      <div class="footer-note">
         © 2026 Home.Net • Powered by MikroTik | Muhammad Rafiq Amin
       </div>
     </div>
@@ -819,16 +611,28 @@
       const timeBox = document.getElementById("timeBox");
       const sessionTime = document.getElementById("sessionTime");
       const timeAlert = document.getElementById("timeAlert");
+      const logoutForm = document.getElementById("logoutForm");
+      const onlineBadge = document.getElementById("onlineBadge");
 
-      if (!timeBox || !sessionTime || !timeAlert) return;
+      if (!timeBox || !sessionTime || !timeAlert || !logoutForm) return;
+
+      if (onlineBadge) {
+        setTimeout(function () {
+          onlineBadge.classList.add("hide");
+
+          setTimeout(function () {
+            onlineBadge.style.display = "none";
+          }, 400);
+        }, 5000);
+      }
 
       const rawTime = (sessionTime.textContent || "").trim();
+      let autoLogoutTriggered = false;
 
-      function parseTimeToMinutes(value) {
+      function parseTimeToSeconds(value) {
         if (!value) return null;
 
         const text = String(value).trim().toLowerCase();
-
         if (!text || text.includes("$(")) return null;
 
         let total = 0;
@@ -840,22 +644,22 @@
         const second = text.match(/(\d+)\s*s/);
 
         if (day) {
-          total += parseInt(day[1], 10) * 1440;
+          total += parseInt(day[1], 10) * 86400;
           found = true;
         }
 
         if (hour) {
-          total += parseInt(hour[1], 10) * 60;
+          total += parseInt(hour[1], 10) * 3600;
           found = true;
         }
 
         if (minute) {
-          total += parseInt(minute[1], 10);
+          total += parseInt(minute[1], 10) * 60;
           found = true;
         }
 
         if (second) {
-          total += Math.ceil(parseInt(second[1], 10) / 60);
+          total += parseInt(second[1], 10);
           found = true;
         }
 
@@ -869,10 +673,10 @@
           });
 
           if (valid && parts.length === 3) {
-            total = (parts[0] * 60) + parts[1] + Math.ceil(parts[2] / 60);
+            total = (parts[0] * 3600) + (parts[1] * 60) + parts[2];
             found = true;
           } else if (valid && parts.length === 2) {
-            total = parts[0] + Math.ceil(parts[1] / 60);
+            total = (parts[0] * 60) + parts[1];
             found = true;
           }
         }
@@ -880,24 +684,51 @@
         return found ? total : null;
       }
 
-      const minutesLeft = parseTimeToMinutes(rawTime);
+      function updateState(secondsLeft) {
+        const minutesLeft = Math.ceil(secondsLeft / 60);
 
-      timeBox.classList.remove("safe", "warn", "danger");
-      timeAlert.classList.remove("show");
+        timeBox.classList.remove("safe", "warn", "danger");
+        timeAlert.classList.remove("show");
 
-      if (minutesLeft === null) {
+        if (secondsLeft <= 0) {
+          timeBox.classList.add("danger");
+          if (!autoLogoutTriggered) {
+            autoLogoutTriggered = true;
+            logoutForm.submit();
+          }
+          return;
+        }
+
+        if (minutesLeft <= 5) {
+          timeBox.classList.add("danger");
+          timeAlert.classList.add("show");
+        } else if (minutesLeft < 15) {
+          timeBox.classList.add("warn");
+        } else {
+          timeBox.classList.add("safe");
+        }
+      }
+
+      let secondsLeft = parseTimeToSeconds(rawTime);
+
+      if (secondsLeft === null) {
         timeBox.classList.add("safe");
         return;
       }
 
-      if (minutesLeft <= 5) {
-        timeBox.classList.add("danger");
-        timeAlert.classList.add("show");
-      } else if (minutesLeft < 15) {
-        timeBox.classList.add("warn");
-      } else {
-        timeBox.classList.add("safe");
-      }
+      updateState(secondsLeft);
+
+      const timer = setInterval(function () {
+        secondsLeft--;
+
+        if (secondsLeft < 0) {
+          clearInterval(timer);
+          updateState(0);
+          return;
+        }
+
+        updateState(secondsLeft);
+      }, 1000);
     })();
   </script>
 
