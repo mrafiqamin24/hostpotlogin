@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<meta http-equiv="refresh" content="2; url=$(link-status)">
+
+<style>
+
+body{
+
+background:
+radial-gradient(circle at top left,#00d2ff33,transparent),
+linear-gradient(135deg,#07142b,#0b2250,#08142d);
+
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+font-family:Arial;
+
+}
+
+.card{
+
+background:rgba(255,255,255,0.12);
+padding:30px;
+border-radius:20px;
+text-align:center;
+
+}
+
+.loader{
+
+border:5px solid #ffffff33;
+border-top:5px solid white;
+border-radius:50%;
+width:40px;
+height:40px;
+margin:auto;
+animation:spin 1s linear infinite;
+
+}
+
+@keyframes spin{
+
+100%{transform:rotate(360deg)}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="loader"></div>
+
+<p>Menghubungkan...</p>
+
+</div>
+
+</body>
+</html>
