@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login Hotspot</title>
+<link rel="icon" href="img/Home.Net.png" type="image/png" />
+<style>
+:root{
+  --bg:#0b1220;
+  --bg-soft:#111a2e;
+  --card:rgba(12,19,35,.82);
+  --line:rgba(255,255,255,.08);
+  --text:#eef4ff;
+  --muted:#96a8c5;
+  --primary:#3b82f6;
+  --primary-soft:#60a5fa;
+  --shadow:0 18px 50px rgba(0,0,0,.35);
+  --radius:24px;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+  min-height:100dvh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top, rgba(59,130,246,.15), transparent 35%),
+    linear-gradient(160deg,var(--bg),var(--bg-soft));
+  overflow:hidden;
+}
+
+.bg-glow{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+.bg-glow::before{
+  content:"";
+  position:absolute;
+  width:320px;
+  height:320px;
+  border-radius:50%;
+  background:rgba(59,130,246,.18);
+  filter:blur(90px);
+  top:-60px;
+  left:50%;
+  transform:translateX(-50%);
+  animation:pulseGlow 5s ease-in-out infinite;
+}
+
+.login-wrap{
+  width:100%;
+  max-width:420px;
+  animation:fadeSlide .8s cubic-bezier(.22,1,.36,1);
+}
+
+.login-card{
+  background:var(--card);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:32px 26px;
+}
+
+.brand{
+  text-align:center;
+  margin-bottom:28px;
+}
+
+.logo{
+  width:100px;
+  height:100px;
+  margin:0 auto 10px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(150deg,);
+  box-shadow:0 14px 35px rgba(59,130,246,.35);
+}
+
+.brand h1{
+  font-size:1.45rem;
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+
+.brand p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:.94rem;
+  line-height:1.6;
+}
+
+.form-group{
+  margin-bottom:15px;
+}
+
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-size:.92rem;
+  font-weight:600;
+  color:#dce8fb;
+}
+
+.input-box{
+  position:relative;
+}
+
+.input-box span{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#89b4f8;
+  pointer-events:none;
+  transition:.25s ease;
+  font-size:1rem;
+}
+
+.input-box input{
+  width:100%;
+  height:54px;
+  border:1px solid rgba(255,255,255,.08);
+  outline:none;
+  border-radius:16px;
+  background:rgba(7,12,24,.88);
+  color:#fff;
+  padding:0 16px 0 46px;
+  font-size:.98rem;
+  transition:.25s ease;
+}
+
+.input-box input:focus{
+  border-color:rgba(96,165,250,.88);
+  box-shadow:
+    0 0 0 4px rgba(59,130,246,.14),
+    0 0 22px rgba(59,130,246,.12);
+  transform:translateY(-1px);
+}
+
+.input-box input:focus + .input-glow{
+  opacity:1;
+  transform:scale(1);
+}
+
+.input-box input:focus ~ span{
+  color:#b9d9ff;
+  text-shadow:0 0 12px rgba(96,165,250,.35);
+}
+
+.input-glow{
+  position:absolute;
+  inset:-2px;
+  border-radius:18px;
+  pointer-events:none;
+  opacity:0;
+  transform:scale(.98);
+  transition:.25s ease;
+  box-shadow:0 0 24px rgba(59,130,246,.18);
+}
+
+.actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 0 18px;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.remember{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+.remember input{
+  accent-color:var(--primary);
+}
+
+.help-link{
+  text-decoration:none;
+  font-size:.9rem;
+  color:#9ac6ff;
+}
+
+.help-link:hover{
+  text-decoration:underline;
+}
+
+.login-btn{
+  width:100%;
+  height:54px;
+  border:0;
+  border-radius:18px;
+  cursor:pointer;
+  color:#fff;
+  font-size:1rem;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--primary),var(--primary-soft));
+  box-shadow:0 16px 35px rgba(59,130,246,.35);
+  transition:transform .18s ease, box-shadow .25s ease, filter .25s ease;
+  position:relative;
+  overflow:hidden;
+}
+
+.login-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.28) 45%, transparent 70%);
+  transform:translateX(-130%);
+}
+
+.login-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 40px rgba(59,130,246,.42);
+  filter:saturate(1.08);
+}
+
+.login-btn:hover::before{
+  animation:shine .8s ease;
+}
+
+.login-btn:active{
+  transform:scale(.985);
+}
+
+.status-box{
+  margin-top:14px;
+  padding:13px 15px;
+  border-radius:14px;
+  font-size:.9rem;
+  display:none;
+  color:#cfe5ff;
+  background:rgba(59,130,246,.12);
+  border:1px solid rgba(59,130,246,.2);
+  animation:fadeUp .3s ease;
+}
+
+.status-box.show{
+  display:block;
+}
+
+.footer-note{
+  margin-top:18px;
+  text-align:center;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.6;
+}
+
+/* loading */
+#loadingBox{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+
+#loadingBox.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.loading-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at top, rgba(59,130,246,.2), transparent),
+    radial-gradient(circle at bottom, rgba(59,130,246,.1), transparent),
+    linear-gradient(180deg,#0b1220,#111a2e);
+  background-size:200% 200%;
+  animation:bgmove 10s ease infinite;
+}
+
+.loading-card{
+  position:relative;
+  width:min(92vw, 360px);
+  background:rgba(12,19,35,.85);
+  padding:30px 24px;
+  border-radius:22px;
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.08);
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.loading-logo{
+  width:80px;
+  height:80px;
+  margin:0 auto 12px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(150deg,);
+  box-shadow:0 12px 26px rgba(59,130,246,.28);
+}
+
+.spinner{
+  width:40px;
+  height:40px;
+  border:4px solid rgba(255,255,255,.2);
+  border-top:4px solid #3b82f6;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:0 auto;
+}
+
+.loading-text{
+  margin-top:12px;
+  font-weight:700;
+}
+
+.loading-subtext{
+  margin-top:6px;
+  font-size:.9rem;
+  color:#a9bfdc;
+}
+
+.progress-wrap{
+  margin-top:18px;
+  width:100%;
+  height:10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);
+}
+
+.progress-bar{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  box-shadow:0 0 18px rgba(59,130,246,.4);
+  transition:width .25s linear;
+}
+
+@keyframes fadeSlide{
+  from{
+    opacity:0;
+    transform:translateY(24px) scale(.98);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@keyframes pulseGlow{
+  0%,100%{
+    transform:translateX(-50%) scale(1);
+    opacity:.8;
+  }
+  50%{
+    transform:translateX(-50%) scale(1.08);
+    opacity:1;
+  }
+}
+
+@keyframes bgmove{
+  0%{background-position:0% 0%;}
+  50%{background-position:100% 100%;}
+  100%{background-position:0% 0%;}
+}
+
+@keyframes shine{
+  to{
+    transform:translateX(130%);
+  }
+}
+
+@keyframes spin{
+  0%{transform:rotate(0)}
+  100%{transform:rotate(360deg)}
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(8px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.running-text{
+  margin-top:10px;
+  width:100%;
+  overflow:hidden;
+  border-radius:10px;
+  border:1px solid rgba(59,130,246,.4);
+  background:linear-gradient(
+    90deg,
+    rgba(59,130,246,.15),
+    rgba(59,130,246,.25),
+    rgba(59,130,246,.15)
+  );
+  box-shadow:
+    0 0 12px rgba(59,130,246,.25),
+    inset 0 0 10px rgba(59,130,246,.2);
+  position:relative;
+}
+
+.running-text span{
+  display:inline-block;
+  white-space:nowrap;
+  padding:4px 0;
+  font-size:.92rem;
+  font-weight:700;
+  color:#e0f0ff;
+  text-shadow:0 0 10px rgba(96,165,250,.6);
+  animation:runText 15s linear infinite;
+}
+
+@keyframes runText{
+  from{ transform:translateX(100%) }
+  to{ transform:translateX(-100%) }
+}
+/* ===== RUNNING TEXT PRO ===== */
+
+.running-text{
+  margin-top:14px;
+  width:100%;
+  overflow:hidden;
+  border-radius:14px;
+  border:1px solid rgba(59,130,246,.4);
+  background:linear-gradient(
+    90deg,
+    rgba(59,130,246,.15),
+    rgba(59,130,246,.25),
+    rgba(59,130,246,.15)
+  );
+  box-shadow:
+    0 0 12px rgba(59,130,246,.25),
+    inset 0 0 10px rgba(59,130,246,.2);
+  position:relative;
+}
+
+.running-text::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,.25),
+    transparent
+  );
+  animation:shineRun 4s linear infinite;
+}
+
+.running-text span{
+  display:inline-block;
+  white-space:nowrap;
+  padding:6px 0;
+  font-size:.92rem;
+  font-weight:700;
+  animation:
+    runText 15s linear infinite,
+    colorShift 4s ease-in-out infinite;
+}
+
+@keyframes runText{
+  from{ transform:translateX(100%) }
+  to{ transform:translateX(-100%) }
+}
+
+@keyframes shineRun{
+  from{ transform:translateX(-100%) }
+  to{ transform:translateX(100%) }
+}
+
+@keyframes colorShift{
+  0%{
+    color:#cfe6ff;
+    text-shadow:0 0 6px #3b82f6;
+  }
+  50%{
+    color:#ffffff;
+    text-shadow:0 0 10px #60a5fa;
+  }
+  100%{
+    color:#cfe6ff;
+    text-shadow:0 0 6px #3b82f6;
+  }
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand">
+      <div><img  class="logo"src="img/Home.Net.png" alt="Home.Net"></div>
+      <p>Masukkan kode voucher untuk mengakses jaringan internet.</p>
+    </div>
+
+    <form id="loginForm" name="login" action="$(link-login-only)" method="post">
+      <input type="hidden" name="dst" value="$(link-orig)" />
+      <input type="hidden" name="popup" value="true" />
+      <input type="hidden" name="username" id="realUser" />
+      <input type="hidden" name="password" id="realPass" />
+
+      <div class="form-group">
+        <label for="voucher">Kode Voucher</label>
+        <div class="input-box">
+          <span>🎫</span>
+          <input id="voucher" type="text" placeholder="Masukkan kode voucher" required />
+          <div class="input-glow"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <label class="remember">
+          <input type="checkbox" />
+          <span>Ingat perangkat</span>
+        </label>
+        <a href="#" class="help-link">Butuh bantuan?</a>
+      </div>
+
+      <button class="login-btn" type="button" id="loginBtn" onclick="startLogin()">Login</button>
+
+<div class="running-text">
+  <span>
+  📡 Home.Net Hotspot • 🚀 Internet cepat stabil • 🎫 Gunakan voucher dengan benar • ⚠️ Jangan share kode • ❤️ Terima kasih sudah menggunakan layanan kami
+  </span>
+  </span>
+</div>
+
+<div class="status-box" id="statusBox">Sedang menghubungkan ke jaringan...</div>
+
+    <div class="footer-note">
+      © 2026 Home.Net • Powered by MikroTik | Muhammad Rafiq Amin
+    </div>
+  </div>
+</div>
+
+<div id="loadingBox">
+  <div class="loading-bg"></div>
+
+  <div class="loading-card">
+    <div> <img class="loading-logo" src="img/Home.Net.png" alt="Home.Net"> </div>
+    <div class="spinner"></div>
+    <div class="loading-text">Menghubungkan ke jaringan...</div>
+    <div class="loading-subtext">Mohon tunggu sebentar</div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('loginForm');
+const button = document.getElementById('loginBtn');
+const statusBox = document.getElementById('statusBox');
+const loadingBox = document.getElementById('loadingBox');
+const progressBar = document.getElementById('progressBar');
+
+function startLogin(){
+  const voucher = document.getElementById('voucher').value.trim();
+
+  if (!voucher) {
+    document.getElementById('voucher').focus();
+    return;
+  }
+
+  document.getElementById('realUser').value = voucher;
+  document.getElementById('realPass').value = voucher;
+
+  loadingBox.classList.add('show');
+  button.textContent = 'Memproses...';
+  statusBox.classList.add('show');
+
+  let progress = 0;
+  progressBar.style.width = '0%';
+
+  const timer = setInterval(() => {
+    progress += 10;
+    progressBar.style.width = progress + '%';
+
+    if (progress >= 100) {
+      clearInterval(timer);
+    }
+  }, 120);
+
+  setTimeout(function(){
+    form.submit();
+  }, 1200);
+}
+</script>
+
+<!--
+  Kalau MikroTik kamu pakai CHAP login, tambahkan script md5.js bawaan template MikroTik.
+  Lalu ubah submit sesuai kebutuhan CHAP.
+-->
+</body>
+</html>
