@@ -1330,6 +1330,7 @@ body::after{
 
     <div class="qr-view">
       <video id="qrVideo" playsinline muted></video>
+      <canvas id="qrCanvas" hidden></canvas>
       <div class="qr-overlay">
         <div class="qr-corners">
           <span></span><span></span><span></span><span></span>
@@ -1351,6 +1352,7 @@ body::after{
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
 <script>
 const form = document.getElementById('loginForm');
 const button = document.getElementById('loginBtn');
@@ -1377,6 +1379,10 @@ let qrAnimationFrame = null;
 let qrDetector = null;
 let qrScanning = false;
 let isAutoLoggingIn = false;
+let qrCanvas = document.getElementById('qrCanvas');
+let qrCanvasCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
+let lastQrScanAt = 0;
+const qrScanInterval = 180;
 
 function startLogin(){
   const voucher = voucherInput.value.trim();
@@ -1444,38 +1450,75 @@ function closeQrModal(){
 }
 
 async function startQrScanner(){
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+  if (!window.isSecureContext) {
+    setQrStatus('Kamera butuh HTTPS atau localhost. Kalau masih HTTP biasa, kamera gak bisa dibuka di banyak browser.');
+    return;
+  }
+
+  const hasModernCameraApi = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  const hasLegacyCameraApi = !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+
+  if (!hasModernCameraApi && !hasLegacyCameraApi) {
     setQrStatus('Browser ini belum dukung akses kamera. Coba pakai tombol Upload QR.');
     return;
   }
 
-  if (!('BarcodeDetector' in window)) {
-    setQrStatus('Browser ini belum support scan QR langsung dari kamera. Pakai tombol Upload QR atau browser yang lebih baru.');
-    return;
-  }
-
   try {
-    qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
-  } catch (error) {
-    setQrStatus('Fitur QR detector gak tersedia di perangkat ini. Coba upload gambar QR.');
-    return;
-  }
+    if ('BarcodeDetector' in window) {
+      try {
+        const supportedFormats = BarcodeDetector.getSupportedFormats
+          ? await BarcodeDetector.getSupportedFormats()
+          : [];
+        const canReadQr = !supportedFormats.length || supportedFormats.includes('qr_code');
+        qrDetector = canReadQr ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+      } catch (error) {
+        qrDetector = null;
+      }
+    } else {
+      qrDetector = null;
+    }
 
-  try {
+    if (!qrDetector && typeof jsQR !== 'function') {
+      setQrStatus('Scanner QR belum siap dipakai di browser ini. Coba refresh halaman atau pakai Upload QR.');
+      return;
+    }
+
     stopQrScanner();
 
-    qrStream = await navigator.mediaDevices.getUserMedia({
+    const constraints = {
       video: {
-        facingMode: { ideal: 'environment' }
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
       },
       audio: false
-    });
+    };
 
+    if (hasModernCameraApi) {
+      qrStream = await navigator.mediaDevices.getUserMedia(constraints);
+    } else {
+      qrStream = await new Promise((resolve, reject) => {
+        const legacyGetUserMedia =
+          navigator.getUserMedia ||
+          navigator.webkitGetUserMedia ||
+          navigator.mozGetUserMedia ||
+          navigator.msGetUserMedia;
+
+        legacyGetUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    }
+
+    qrVideo.setAttribute('playsinline', true);
+    qrVideo.setAttribute('autoplay', true);
+    qrVideo.setAttribute('muted', true);
     qrVideo.srcObject = qrStream;
     await qrVideo.play();
 
     qrScanning = true;
-    setQrStatus('Kamera aktif. Arahkan ke QR code voucher ya.');
+    lastQrScanAt = 0;
+    setQrStatus(qrDetector
+      ? 'Kamera aktif. Arahkan ke QR code voucher ya.'
+      : 'Kamera aktif. Mode kompatibel nyala, lagi scan QR...');
     scanQrFrame();
   } catch (error) {
     setQrStatus('Kamera gagal dibuka. Pastikan izin kamera diaktifkan lalu coba lagi.');
@@ -1499,18 +1542,61 @@ function stopQrScanner(){
     qrStream.getTracks().forEach(track => track.stop());
     qrStream = null;
   }
+
+  if (qrCanvasCtx && qrCanvas) {
+    qrCanvasCtx.clearRect(0, 0, qrCanvas.width || 0, qrCanvas.height || 0);
+  }
 }
 
-async function scanQrFrame(){
-  if (!qrScanning || !qrDetector || isAutoLoggingIn) return;
+function readQrFromCanvas(width, height){
+  if (!qrCanvasCtx || !width || !height || typeof jsQR !== 'function') return null;
+
+  try {
+    const imageData = qrCanvasCtx.getImageData(0, 0, width, height);
+    return jsQR(imageData.data, width, height, {
+      inversionAttempts: 'attemptBoth'
+    });
+  } catch (error) {
+    return null;
+  }
+}
+
+async function scanQrFrame(timestamp = 0){
+  if (!qrScanning || isAutoLoggingIn) return;
 
   try {
     if (qrVideo.readyState >= 2) {
-      const barcodes = await qrDetector.detect(qrVideo);
+      const videoWidth = qrVideo.videoWidth || qrVideo.clientWidth;
+      const videoHeight = qrVideo.videoHeight || qrVideo.clientHeight;
 
-      if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-        autoLoginFromQr(barcodes[0].rawValue);
-        return;
+      if (videoWidth && videoHeight && timestamp - lastQrScanAt >= qrScanInterval) {
+        lastQrScanAt = timestamp;
+        qrCanvas.width = videoWidth;
+        qrCanvas.height = videoHeight;
+        qrCanvasCtx.drawImage(qrVideo, 0, 0, videoWidth, videoHeight);
+
+        let rawValue = '';
+
+        if (qrDetector) {
+          try {
+            const barcodes = await qrDetector.detect(qrCanvas);
+            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+              rawValue = barcodes[0].rawValue;
+            }
+          } catch (error) {}
+        }
+
+        if (!rawValue) {
+          const qrResult = readQrFromCanvas(videoWidth, videoHeight);
+          if (qrResult && qrResult.data) {
+            rawValue = qrResult.data;
+          }
+        }
+
+        if (rawValue) {
+          autoLoginFromQr(rawValue);
+          return;
+        }
       }
     }
   } catch (error) {}
@@ -1522,29 +1608,45 @@ qrImageInput.addEventListener('change', async (event) => {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
 
-  if (!('BarcodeDetector' in window)) {
-    setQrStatus('Browser ini belum support baca QR dari gambar. Coba pakai browser yang lebih baru.');
-    event.target.value = '';
-    return;
-  }
-
-  try {
-    qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
-  } catch (error) {
-    setQrStatus('QR detector gagal dipakai di perangkat ini.');
-    event.target.value = '';
-    return;
-  }
-
   try {
     const imageBitmap = await createImageBitmap(file);
-    const barcodes = await qrDetector.detect(imageBitmap);
+    const width = imageBitmap.width;
+    const height = imageBitmap.height;
 
-    if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+    qrCanvas.width = width;
+    qrCanvas.height = height;
+    qrCanvasCtx.drawImage(imageBitmap, 0, 0, width, height);
+
+    let rawValue = '';
+
+    if ('BarcodeDetector' in window) {
+      try {
+        if (!qrDetector) {
+          qrDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        }
+        const barcodes = await qrDetector.detect(qrCanvas);
+        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+          rawValue = barcodes[0].rawValue;
+        }
+      } catch (error) {}
+    }
+
+    if (!rawValue) {
+      const qrResult = readQrFromCanvas(width, height);
+      if (qrResult && qrResult.data) {
+        rawValue = qrResult.data;
+      }
+    }
+
+    if (rawValue) {
       setQrStatus('QR dari gambar berhasil dibaca. Auto login jalan...');
-      autoLoginFromQr(barcodes[0].rawValue);
+      autoLoginFromQr(rawValue);
     } else {
       setQrStatus('QR tidak terdeteksi dari gambar itu. Coba foto yang lebih jelas.');
+    }
+
+    if (imageBitmap.close) {
+      imageBitmap.close();
     }
   } catch (error) {
     setQrStatus('Gagal membaca gambar QR. Coba file lain yang lebih jelas.');
