@@ -20,7 +20,6 @@
   --yellow:#facc15;
   --red:#ef4444;
   --purple:#a855f7;
-  --cyan:#38bdf8;
   --shadow:0 20px 60px rgba(0,0,0,.35);
 }
 
@@ -36,7 +35,7 @@ body{
   min-height:100dvh;
   color:var(--text);
   background:
-    radial-gradient(circle at top center, rgba(78,140,255,.18), transparent 30%),
+    radial-gradient(circle at top center, rgba(78,140,255,.12), transparent 32%),
     linear-gradient(180deg, var(--bg), var(--bg2));
   display:flex;
   align-items:center;
@@ -51,74 +50,6 @@ body{
   position:relative;
 }
 
-.glow-orbit{
-  position:absolute;
-  inset:-60px;
-  z-index:0;
-  pointer-events:none;
-  filter:blur(30px);
-  animation:orbitSpin 16s linear infinite;
-}
-
-.glow-orbit::before{
-  content:"";
-  position:absolute;
-  width:220px;
-  height:220px;
-  border-radius:50%;
-  top:0;
-  left:5%;
-  background:rgba(59,130,246,.35);
-  box-shadow:
-    0 0 60px rgba(59,130,246,.35),
-    0 0 120px rgba(59,130,246,.25);
-  animation:pulse1 3.5s ease-in-out infinite;
-}
-
-.glow-orbit::after{
-  content:"";
-  position:absolute;
-  width:180px;
-  height:180px;
-  border-radius:50%;
-  bottom:0;
-  right:5%;
-  background:rgba(168,85,247,.35);
-  box-shadow:
-    0 0 60px rgba(168,85,247,.35),
-    0 0 120px rgba(168,85,247,.25);
-  animation:pulse2 4s ease-in-out infinite;
-}
-
-.scan-line{
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  overflow:hidden;
-  border-radius:28px;
-}
-
-.scan-line::before{
-  content:"";
-  position:absolute;
-  left:-20%;
-  top:0;
-  width:140%;
-  height:2px;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    rgba(96,165,250,.95),
-    rgba(168,85,247,.9),
-    transparent
-  );
-  box-shadow:
-    0 0 12px rgba(96,165,250,.65),
-    0 0 22px rgba(168,85,247,.35);
-  animation:scanDown 4.8s linear infinite;
-}
-
 .card{
   position:relative;
   z-index:1;
@@ -129,7 +60,7 @@ body{
   box-shadow:var(--shadow);
   backdrop-filter:blur(18px);
   -webkit-backdrop-filter:blur(18px);
-  padding:28px 20px 20px;
+  padding:26px 18px 18px;
   overflow:hidden;
 }
 
@@ -148,44 +79,83 @@ body{
   inset:0;
   border-radius:28px;
   pointer-events:none;
-  border:1px solid rgba(96,165,250,.18);
+  border:1px solid rgba(96,165,250,.16);
   box-shadow:
-    inset 0 0 18px rgba(96,165,250,.06),
-    0 0 18px rgba(96,165,250,.06);
+    inset 0 0 18px rgba(96,165,250,.05),
+    0 0 18px rgba(96,165,250,.05);
 }
 
 .brand{
   text-align:center;
-  margin-bottom:22px;
+  margin-bottom:18px;
 }
 
-.logo{
-  width:92px;
-  height:92px;
-  margin:0 auto 14px;
-  border-radius:22px;
+.logo-wrap{
+  width:96px;
+  height:96px;
+  margin:0 auto 12px;
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#fff;
-  font-size:2rem;
-  font-weight:800;
+  animation:logoFloat 4.5s ease-in-out infinite;
+}
+
+.logo-wrap::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:26px;
+  background:
+    radial-gradient(circle, rgba(75,141,248,.24), transparent 62%);
+  filter:blur(10px);
+  animation:logoGlowPulse 3.2s ease-in-out infinite;
+  z-index:0;
+}
+
+.logo-wrap::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:24px;
+  background:conic-gradient(
+    from 0deg,
+    rgba(255,255,255,0) 0deg,
+    rgba(255,255,255,.24) 55deg,
+    rgba(255,255,255,0) 110deg,
+    rgba(255,255,255,0) 360deg
+  );
+  animation:logoShineRotate 5s linear infinite;
+  filter:blur(1px);
+  opacity:.9;
+  z-index:1;
+  pointer-events:none;
+}
+
+.logo{
+  position:relative;
+  z-index:2;
+  width:84px;
+  height:84px;
+  border-radius:20px;
+  display:block;
   box-shadow:
     0 0 0 1px rgba(255,255,255,.15) inset,
-    0 14px 30px rgba(79,140,255,.28);
+    0 14px 30px rgba(79,140,255,.24),
+    0 0 24px rgba(79,140,255,.16);
 }
 
 .brand h1{
-  font-size:1.45rem;
+  font-size:1.34rem;
   font-weight:800;
   letter-spacing:.2px;
   color:#f5f8ff;
   text-shadow:0 2px 0 rgba(0,0,0,.25);
-  line-height:1.2;
+  line-height:1.25;
   word-break:break-word;
 }
 
-/* PREMIUM ONLINE TOAST */
+/* ONLINE STATUS */
 
 .online-toast{
   position:fixed;
@@ -198,13 +168,8 @@ body{
   padding:11px 16px;
   border-radius:999px;
   color:#dcfce7;
-  font-size:.95rem;
+  font-size:.94rem;
   font-weight:700;
-  opacity:0;
-  animation:onlineToast 5s ease forwards;
-}
-
-.premium-online{
   background:linear-gradient(135deg, rgba(10,20,40,.92), rgba(18,34,62,.82));
   border:1px solid rgba(255,255,255,.10);
   backdrop-filter:blur(14px);
@@ -213,8 +178,9 @@ body{
     0 12px 30px rgba(0,0,0,.28),
     inset 0 1px 0 rgba(255,255,255,.06),
     0 0 18px rgba(34,197,94,.10);
+  opacity:0;
+  animation:onlineToast 5s ease forwards;
 }
-
 .premium-online i{
   color:#86efac;
   font-size:1rem;
@@ -244,83 +210,48 @@ body{
   animation:onlinePulse 1.8s ease-in-out infinite;
 }
 
-/* STATUS WIDGETS */
+/* SLOGAN BOX */
 
-.status-widgets{
-  display:grid;
-  grid-template-columns:repeat(3, minmax(0,1fr));
-  gap:10px;
-  margin:4px 0 18px;
-}
-
-.status-widget{
-  position:relative;
-  padding:13px 10px;
+.slogan-box{
+  margin:0 0 16px;
+  padding:14px 14px 13px;
+  border:1px solid rgba(255,255,255,.08);
   border-radius:18px;
-  border:1px solid rgba(255,255,255,.07);
-  background:rgba(255,255,255,.035);
-  overflow:hidden;
-  box-shadow:
-    inset 0 0 14px rgba(255,255,255,.02),
-    0 10px 24px rgba(0,0,0,.12);
+  background:rgba(255,255,255,.04);
+  box-shadow:inset 0 0 12px rgba(59,130,246,.08);
 }
 
-.status-widget::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 70%);
-  pointer-events:none;
+.slogan-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
 }
 
-.status-widget .icon{
-  width:38px;
-  height:38px;
-  margin:0 auto 8px;
-  border-radius:14px;
+.slogan-icon{
+  width:36px;
+  height:36px;
+  border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1rem;
-  box-shadow:0 0 14px rgba(75,141,248,.12);
+  background:rgba(75,141,248,.14);
+  border:1px solid rgba(75,141,248,.22);
+  color:#bcd6ff;
+  flex:0 0 auto;
 }
 
-.status-widget .name{
-  font-size:.76rem;
-  color:#9fb3d9;
-  text-align:center;
-  margin-bottom:5px;
-}
-
-.status-widget .value{
-  font-size:.9rem;
+.slogan-title{
+  font-size:.96rem;
   font-weight:800;
-  text-align:center;
   color:#f5f8ff;
-  line-height:1.25;
-  word-break:break-word;
+  line-height:1.2;
 }
 
-.status-widget.live .icon{
-  background:rgba(34,197,94,.14);
-  border:1px solid rgba(34,197,94,.24);
-  color:#86efac;
-}
-
-.status-widget.live .value{
-  color:#dcfce7;
-}
-
-.status-widget.signal .icon{
-  background:rgba(56,189,248,.14);
-  border:1px solid rgba(56,189,248,.24);
-  color:#7dd3fc;
-}
-
-.status-widget.secure .icon{
-  background:rgba(168,85,247,.14);
-  border:1px solid rgba(168,85,247,.24);
-  color:#d8b4fe;
+.slogan-text{
+  font-size:.88rem;
+  line-height:1.55;
+  color:#cddaf3;
 }
 
 /* ALERT */
@@ -350,23 +281,23 @@ body{
 /* TIME BOX */
 
 .time-box{
-  margin:8px 0 22px;
+  margin:6px 0 18px;
   border:1px solid var(--line);
-  border-radius:24px;
-  padding:24px 16px;
+  border-radius:22px;
+  padding:22px 14px;
   text-align:center;
   background:rgba(5,14,30,.35);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
 }
 
 .time-box .label{
-  font-size:.98rem;
+  font-size:.95rem;
   color:#f0f6ff;
   margin-bottom:10px;
 }
 
 .time-box .time{
-  font-size:clamp(1.9rem, 6vw, 3rem);
+  font-size:clamp(1.85rem, 6vw, 2.7rem);
   font-weight:900;
   line-height:1.1;
   letter-spacing:-1px;
@@ -462,7 +393,7 @@ body{
 .connection-content{
   max-height:420px;
   overflow:hidden;
-  transition:max-height .28s ease, opacity .25s ease, padding .25s ease;
+  transition:max-height .28s ease, opacity .25s ease;
   opacity:1;
 }
 
@@ -479,10 +410,10 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:16px;
-  padding:13px 0;
+  gap:14px;
+  padding:12px 0;
   border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:.96rem;
+  font-size:.94rem;
 }
 
 .row:last-child{
@@ -507,29 +438,30 @@ body{
 /* PACKAGE LIST */
 
 .package-box{
-  margin-top:18px;
+  margin-top:16px;
   border:1px solid rgba(255,255,255,.08);
   border-radius:20px;
-  padding:16px 14px;
   background:rgba(255,255,255,.04);
-  box-shadow:0 0 12px rgba(59,130,246,.15) inset;
+  box-shadow:0 0 12px rgba(59,130,246,.12) inset;
+  overflow:hidden;
 }
 
-.package-title{
-  font-size:.95rem;
-  font-weight:800;
-  color:#f5f8ff;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:8px;
+.package-box.collapsed .connection-arrow{
+  transform:rotate(-90deg);
+}
+
+.package-box.collapsed .connection-content{
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
 }
 
 .package-list{
   list-style:none;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:0;
+  padding:0 14px 10px;
 }
 
 .package-list li{
@@ -537,9 +469,9 @@ body{
   justify-content:space-between;
   align-items:center;
   gap:12px;
-  padding:10px 0 10px 18px;
+  padding:11px 0 11px 18px;
   border-bottom:1px solid rgba(255,255,255,.07);
-  font-size:.92rem;
+  font-size:.91rem;
   position:relative;
 }
 
@@ -577,7 +509,7 @@ body{
 /* ACTIONS */
 
 .actions{
-  margin-top:22px;
+  margin-top:18px;
 }
 
 .actions form{
@@ -586,7 +518,7 @@ body{
 
 .btn{
   width:100%;
-  min-height:56px;
+  min-height:54px;
   padding:0 20px;
   border:none;
   border-radius:18px;
@@ -595,7 +527,7 @@ body{
   justify-content:center;
   gap:10px;
   text-decoration:none;
-  font-size:1rem;
+  font-size:.98rem;
   font-weight:800;
   line-height:1;
   white-space:nowrap;
@@ -643,7 +575,7 @@ body{
 /* MARQUEE */
 
 .marquee-wrap{
-  margin-top:16px;
+  margin-top:14px;
   width:100%;
   overflow:hidden;
 }
@@ -657,7 +589,7 @@ body{
 .marquee span{
   display:inline-block;
   padding-left:100%;
-  font-size:.9rem;
+  font-size:.88rem;
   color:#f3f7ff;
   animation:marquee 15s linear infinite;
 }
@@ -665,13 +597,14 @@ body{
 /* FOOTER */
 
 .footer{
-  margin-top:18px;
+  margin-top:16px;
   padding-top:12px;
   border-top:1px solid rgba(255,255,255,.08);
   text-align:center;
-  font-size:.82rem;
+  font-size:.8rem;
   color:#9fb3d9;
   letter-spacing:.3px;
+  line-height:1.55;
 }
 
 .footer span{
@@ -688,13 +621,6 @@ body{
 @keyframes marquee{
   0%{ transform:translateX(0); }
   100%{ transform:translateX(-100%); }
-}
-
-@keyframes onlineToast{
-  0%{ opacity:0; transform:translateY(-10px); }
-  10%{ opacity:1; transform:translateY(0); }
-  85%{ opacity:1; transform:translateY(0); }
-  100%{ opacity:0; transform:translateY(-10px); }
 }
 
 @keyframes onlinePulse{
@@ -718,49 +644,56 @@ body{
   50%{ opacity:.75; }
 }
 
-@keyframes orbitSpin{
-  0%{ transform:rotate(0deg); }
-  100%{ transform:rotate(360deg); }
-}
-
-@keyframes pulse1{
+@keyframes logoFloat{
   0%,100%{
-    transform:scale(1);
-    opacity:.72;
+    transform:translateY(0);
   }
   50%{
-    transform:scale(1.2);
+    transform:translateY(-6px);
+  }
+}
+
+@keyframes logoGlowPulse{
+  0%,100%{
+    transform:scale(1);
+    opacity:.75;
+  }
+  50%{
+    transform:scale(1.08);
     opacity:1;
   }
 }
 
-@keyframes pulse2{
-  0%,100%{
-    transform:scale(1);
-    opacity:.68;
+@keyframes logoShineRotate{
+  from{
+    transform:rotate(0deg);
   }
-  50%{
-    transform:scale(1.25);
-    opacity:1;
+  to{
+    transform:rotate(360deg);
   }
 }
 
-@keyframes scanDown{
+@keyframes onlineToast{
   0%{
-    top:-10%;
     opacity:0;
+    transform:translateY(-10px);
   }
   10%{
     opacity:1;
+    transform:translateY(0);
   }
-  90%{
+  85%{
     opacity:1;
+    transform:translateY(0);
   }
   100%{
-    top:110%;
     opacity:0;
+    transform:translateY(-10px);
+    visibility:hidden;
   }
 }
+
+/* RESPONSIVE */
 
 @media (max-width:640px){
   body{
@@ -775,48 +708,59 @@ body{
 
   .card{
     border-radius:24px;
-    padding:24px 18px 18px;
+    padding:22px 16px 18px;
   }
 
   .card::before,
-  .card::after,
-  .scan-line{
+  .card::after{
     border-radius:24px;
   }
 
   .brand{
-    margin-bottom:20px;
+    margin-bottom:18px;
   }
 
+  .logo-wrap{
+    width:88px;
+    height:88px;
+  }
+
+  .logo-wrap{
+  perspective:800px;
+}
+
+.logo{
+  position:relative;
+  z-index:2;
+  width:84px;
+  height:84px;
+  border-radius:20px;
+  display:block;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.15) inset,
+    0 14px 30px rgba(79,140,255,.24),
+    0 0 24px rgba(79,140,255,.16);
+  transition:transform .35s ease, box-shadow .35s ease;
+  transform-style:preserve-3d;
+}
+
+.logo-wrap:hover .logo{
+  transform:
+    rotateX(8deg)
+    rotateY(-8deg)
+    scale(1.04);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.2) inset,
+    0 18px 40px rgba(79,140,255,.35),
+    0 0 40px rgba(79,140,255,.25);
+}
+.logo-wrap:hover::before{
+  animation:logoGlowPulse .9s ease-in-out infinite;
+}
   .logo{
-    width:78px;
-    height:78px;
-    font-size:1.6rem;
-    border-radius:20px;
-  }
-
-  .status-widgets{
-    gap:8px;
-  }
-
-  .status-widget{
-    padding:12px 8px;
-  }
-
-  .time-box{
-    border-radius:20px;
-    padding:20px 14px;
-    margin-bottom:20px;
-  }
-
-  .btn{
-    min-height:54px;
-  }
-
-  .footer{
-    text-align:center;
-    font-size:.8rem;
-    line-height:1.6;
+    width:76px;
+    height:76px;
+    border-radius:18px;
   }
 
   .online-toast,
@@ -829,54 +773,51 @@ body{
   .alert-box{
     top:70px;
   }
+
+  .time-box{
+    border-radius:20px;
+    padding:19px 12px;
+  }
+
+  .btn{
+    min-height:52px;
+  }
 }
 
 @media (max-width:420px){
   .card{
     border-radius:22px;
-    padding:22px 16px 18px;
+    padding:20px 14px 16px;
   }
 
   .card::before,
-  .card::after,
-  .scan-line{
+  .card::after{
     border-radius:22px;
-  }
-
-  .status-widgets{
-    grid-template-columns:1fr;
   }
 
   .row{
     gap:10px;
-    padding:12px 0;
+    padding:11px 0;
   }
 
   .row .right{
-    max-width:52%;
-    font-size:.9rem;
+    max-width:54%;
+    font-size:.89rem;
   }
 
   .package-list li{
     gap:10px;
-    font-size:.9rem;
+    font-size:.89rem;
   }
 
   .marquee span{
-    font-size:.84rem;
+    font-size:.83rem;
+  }
+
+  .slogan-text{
+    font-size:.86rem;
   }
 }
-
-.package-box.collapsed .connection-arrow{
-  transform:rotate(-90deg);
-}
-
-.package-box.collapsed .connection-content{
-  max-height:0;
-  opacity:0;
-  overflow:hidden;
-}
-
 </style>
 </head>
 <body>
@@ -894,40 +835,23 @@ body{
   </div>
 
   <div class="wrapper">
-    <div class="glow-orbit"></div>
-    <div class="scan-line"></div>
-
     <div class="card">
       <div class="brand">
-        <div>
+        <div class="logo-wrap">
           <img src="img/Home.Net.png" alt="Home.Net" class="logo">
         </div>
-        <h1>Selamat Datang 😉</h1>
+        <h1>Selamat datang di Home.Net</h1>
       </div>
 
-      <div class="status-widgets">
-        <div class="status-widget live">
-          <div class="icon">
-            <i class="bi bi-wifi"></i>
+      <div class="slogan-box">
+        <div class="slogan-head">
+          <div class="slogan-icon">
+            <i class="bi bi-stars"></i>
           </div>
-          <div class="name">Status</div>
-          <div class="value">Terhubung</div>
+          <div class="slogan-title">Cepat, stabil, dan nyaman dipakai</div>
         </div>
-
-        <div class="status-widget signal">
-          <div class="icon">
-            <i class="bi bi-lightning-charge"></i>
-          </div>
-          <div class="name">Koneksi</div>
-          <div class="value">Stabil</div>
-        </div>
-
-        <div class="status-widget secure">
-          <div class="icon">
-            <i class="bi bi-shield-lock"></i>
-          </div>
-          <div class="name">Akses</div>
-          <div class="value">Aman</div>
+        <div class="slogan-text">
+          Nikmati koneksi internet Home.Net yang siap nemenin aktivitas harian kamu dengan pengalaman yang lebih lancar, aman, dan tetap responsif.
         </div>
       </div>
 
@@ -981,44 +905,44 @@ body{
       </div>
 
       <div class="package-box" id="packageBox">
-  <button class="connection-toggle" id="packageToggle" type="button">
-    <div class="connection-toggle-left">
-      <div class="connection-toggle-icon">
-        <i class="bi bi-lightning-charge-fill"></i>
-      </div>
-      <div>
-        <div class="connection-toggle-title">List Paket & Harga</div>
-        <div class="connection-toggle-sub">Pilih paket sesuai kebutuhan</div>
-      </div>
-    </div>
-    <i class="bi bi-chevron-down connection-arrow"></i>
-  </button>
+        <button class="connection-toggle" id="packageToggle" type="button" aria-expanded="true">
+          <div class="connection-toggle-left">
+            <div class="connection-toggle-icon">
+              <i class="bi bi-lightning-charge-fill"></i>
+            </div>
+            <div>
+              <div class="connection-toggle-title">List Paket & Harga</div>
+              <div class="connection-toggle-sub">Pilih paket sesuai kebutuhan</div>
+            </div>
+          </div>
+          <i class="bi bi-chevron-down connection-arrow"></i>
+        </button>
 
-  <div class="connection-content" id="packageContent">
-    <ul class="package-list">
-      <li>
-        <span class="package-name">Paket 2 Jam</span>
-        <span class="package-price">Rp2.000</span>
-      </li>
-      <li>
-        <span class="package-name">Paket 6 Jam</span>
-        <span class="package-price">Rp5.000</span>
-      </li>
-      <li>
-        <span class="package-name">Paket 12 Jam</span>
-        <span class="package-price">Rp8.000</span>
-      </li>
-      <li>
-        <span class="package-name">Paket 24 Jam</span>
-        <span class="package-price">Rp10.000</span>
-      </li>
-      <li>
-        <span class="package-name">Paket 3 Hari</span>
-        <span class="package-price">Rp25.000</span>
-      </li>
-    </ul>
-  </div>
-</div>
+        <div class="connection-content" id="packageContent">
+          <ul class="package-list">
+            <li>
+              <span class="package-name">Paket 2 Jam</span>
+              <span class="package-price">Rp2.000</span>
+            </li>
+            <li>
+              <span class="package-name">Paket 6 Jam</span>
+              <span class="package-price">Rp5.000</span>
+            </li>
+            <li>
+              <span class="package-name">Paket 12 Jam</span>
+              <span class="package-price">Rp8.000</span>
+            </li>
+            <li>
+              <span class="package-name">Paket 24 Jam</span>
+              <span class="package-price">Rp10.000</span>
+            </li>
+            <li>
+              <span class="package-name">Paket 3 Hari</span>
+              <span class="package-price">Rp25.000</span>
+            </li>
+          </ul>
+        </div>
+      </div>
 
       <div class="actions">
         <form action="$(link-logout)" method="post">
@@ -1051,6 +975,8 @@ const rawTime = sessionTime.textContent.trim();
 
 const connectionBox = document.getElementById('connectionBox');
 const connectionToggle = document.getElementById('connectionToggle');
+const packageBox = document.getElementById('packageBox');
+const packageToggle = document.getElementById('packageToggle');
 
 function parseTimeToMinutes(value) {
   if (!value) return null;
@@ -1114,37 +1040,43 @@ if (minutesLeft !== null) {
   }
 }
 
-/* connection state */
 const CONNECTION_STATE_KEY = 'homeNetConnectionCollapsed';
+const PACKAGE_STATE_KEY = 'homeNetPackageCollapsed';
 
-function setConnectionState(collapsed) {
-  connectionBox.classList.toggle('collapsed', collapsed);
-  connectionToggle.setAttribute('aria-expanded', String(!collapsed));
-  localStorage.setItem(CONNECTION_STATE_KEY, collapsed ? 'true' : 'false');
-}
-
-function getDefaultConnectionState() {
+function getDefaultCollapsedState() {
   return window.matchMedia("(max-width: 640px)").matches;
 }
 
-function initConnectionState() {
-  const savedState = localStorage.getItem(CONNECTION_STATE_KEY);
+function setSectionState(box, toggle, storageKey, collapsed) {
+  box.classList.toggle('collapsed', collapsed);
+  toggle.setAttribute('aria-expanded', String(!collapsed));
+  localStorage.setItem(storageKey, collapsed ? 'true' : 'false');
+}
+
+function initSectionState(box, toggle, storageKey) {
+  const savedState = localStorage.getItem(storageKey);
 
   if (savedState === 'true') {
-    setConnectionState(true);
+    setSectionState(box, toggle, storageKey, true);
   } else if (savedState === 'false') {
-    setConnectionState(false);
+    setSectionState(box, toggle, storageKey, false);
   } else {
-    setConnectionState(getDefaultConnectionState());
+    setSectionState(box, toggle, storageKey, getDefaultCollapsedState());
   }
 }
 
 connectionToggle.addEventListener('click', function () {
   const collapsed = !connectionBox.classList.contains('collapsed');
-  setConnectionState(collapsed);
+  setSectionState(connectionBox, connectionToggle, CONNECTION_STATE_KEY, collapsed);
 });
 
-initConnectionState();
+packageToggle.addEventListener('click', function () {
+  const collapsed = !packageBox.classList.contains('collapsed');
+  setSectionState(packageBox, packageToggle, PACKAGE_STATE_KEY, collapsed);
+});
+
+initSectionState(connectionBox, connectionToggle, CONNECTION_STATE_KEY);
+initSectionState(packageBox, packageToggle, PACKAGE_STATE_KEY);
 
 /* auto refresh saat halaman dibuka kembali */
 window.addEventListener('pageshow', function (event) {
@@ -1169,41 +1101,6 @@ document.addEventListener('visibilitychange', function () {
     }
   }
 });
-
-const packageBox = document.getElementById('packageBox');
-const packageToggle = document.getElementById('packageToggle');
-
-const PACKAGE_STATE_KEY = 'homeNetPackageCollapsed';
-
-function setPackageState(collapsed) {
-  packageBox.classList.toggle('collapsed', collapsed);
-  packageToggle.setAttribute('aria-expanded', String(!collapsed));
-  localStorage.setItem(PACKAGE_STATE_KEY, collapsed ? 'true' : 'false');
-}
-
-function getDefaultPackageState() {
-  return window.matchMedia("(max-width: 640px)").matches;
-}
-
-function initPackageState() {
-  const savedState = localStorage.getItem(PACKAGE_STATE_KEY);
-
-  if (savedState === 'true') {
-    setPackageState(true);
-  } else if (savedState === 'false') {
-    setPackageState(false);
-  } else {
-    setPackageState(getDefaultPackageState());
-  }
-}
-
-packageToggle.addEventListener('click', function () {
-  const collapsed = !packageBox.classList.contains('collapsed');
-  setPackageState(collapsed);
-});
-
-initPackageState();
-
 </script>
 
 </body>
