@@ -1,526 +1,934 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Status Hotspot</title>
-  <link rel="icon" href="img/Home.Net.png" type="image/png" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-
-  <style>
-    :root{
-      --bg-main:#08111f;
-      --bg-secondary:#0d1b32;
-      --card-bg:#101c33;
-      --card-border:rgba(255,255,255,.08);
-      --line:rgba(255,255,255,.08);
-      --text:#eef4ff;
-      --text-soft:#9fb3d9;
-      --text-bright:#ffffff;
-
-      --blue-1:#4b8df8;
-      --blue-2:#3d7ff0;
-      --green:#22c55e;
-      --yellow:#facc15;
-      --red:#ef4444;
-
-      --shadow:0 14px 34px rgba(0,0,0,.28);
-      --radius-lg:26px;
-      --radius-md:20px;
-      --radius-sm:18px;
-    }
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    html,
-    body{
-      width:100%;
-      min-height:100%;
-    }
-
-    body{
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      min-height:100vh;
-      color:var(--text);
-      background:
-        radial-gradient(circle at top, rgba(75,141,248,.12), transparent 28%),
-        linear-gradient(180deg, var(--bg-main), var(--bg-secondary));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-      overflow-x:hidden;
-      line-height:1.5;
-    }
-
-    img{
-      display:block;
-      max-width:100%;
-    }
-
-    .wrapper{
-      width:100%;
-      max-width:400px;
-    }
-
-    .card{
-      width:100%;
-      background:var(--card-bg);
-      border:1px solid var(--card-border);
-      border-radius:var(--radius-lg);
-      box-shadow:var(--shadow);
-      padding:24px 18px 18px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      border-radius:inherit;
-      background:linear-gradient(180deg, rgba(255,255,255,.035), transparent 28%);
-    }
-
-    .brand{
-      text-align:center;
-      margin-bottom:20px;
-      position:relative;
-      z-index:1;
-    }
-
-    .logo-wrap{
-      width:84px;
-      height:84px;
-      margin:0 auto 12px;
-      border-radius:20px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:rgba(255,255,255,.025);
-      border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 8px 18px rgba(0,0,0,.16);
-      overflow:hidden;
-    }
-
-    .logo{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-      padding:10px;
-    }
-
-    .brand h1{
-      font-size:1.3rem;
-      font-weight:800;
-      color:var(--text-bright);
-      letter-spacing:.2px;
-      overflow-wrap:anywhere;
-    }
-
-    .online-badge{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      width:fit-content;
-      max-width:100%;
-      margin:0 auto 16px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(34,197,94,.10);
-      border:1px solid rgba(34,197,94,.20);
-      color:#dcfce7;
-      font-size:.88rem;
-      font-weight:600;
-      text-align:center;
-      position:relative;
-      z-index:1;
-      transition:opacity .35s ease, transform .35s ease, margin .35s ease, padding .35s ease;
-    }
-
-    .online-badge.hide{
-      opacity:0;
-      transform:translateY(-6px);
-      pointer-events:none;
-    }
-
-    .online-dot{
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      background:var(--green);
-      flex:0 0 auto;
-    }
-
-    .alert-box{
-      display:none;
-      margin-bottom:14px;
-      padding:12px 14px;
-      border-radius:16px;
-      background:rgba(239,68,68,.12);
-      border:1px solid rgba(239,68,68,.22);
-      color:#ffe1e5;
-      font-size:.9rem;
-      position:relative;
-      z-index:1;
-    }
-
-    .alert-box.show{
-      display:block;
-    }
-
-    .time-box{
-      margin:8px 0 20px;
-      padding:22px 14px;
-      border:1px solid var(--line);
-      border-radius:var(--radius-md);
-      text-align:center;
-      background:rgba(255,255,255,.025);
-      position:relative;
-      z-index:1;
-    }
-
-    .time-box .label{
-      font-size:.96rem;
-      color:#dfeaff;
-      margin-bottom:8px;
-    }
-
-    .time-box .time{
-      font-size:clamp(1.8rem, 6vw, 2.8rem);
-      font-weight:900;
-      line-height:1.1;
-      letter-spacing:-.8px;
-      overflow-wrap:anywhere;
-    }
-
-    .time-box.safe .time{
-      color:var(--green);
-    }
-
-    .time-box.warn .time{
-      color:var(--yellow);
-    }
-
-    .time-box.danger .time{
-      color:var(--red);
-    }
-
-    .rows{
-      margin-top:4px;
-      position:relative;
-      z-index:1;
-    }
-
-    .row{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 0;
-      border-bottom:1px solid rgba(255,255,255,.07);
-      font-size:.95rem;
-    }
-
-    .row:last-child{
-      border-bottom:none;
-    }
-
-    .row .left{
-      flex:1;
-      color:#d7e5ff;
-      font-weight:500;
-      min-width:0;
-    }
-
-    .row .right{
-      flex:1;
-      max-width:56%;
-      text-align:right;
-      color:#ffffff;
-      font-weight:600;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-      min-width:0;
-    }
-
-    .package-box{
-      margin-top:18px;
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.08);
-      background:rgba(255,255,255,.03);
-      position:relative;
-      z-index:1;
-    }
-
-    .package-title{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin-bottom:8px;
-      font-size:.95rem;
-      font-weight:800;
-      color:var(--text-bright);
-    }
-
-    .package-list{
-      list-style:none;
-    }
-
-    .package-list li{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding:9px 0;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      font-size:.92rem;
-    }
-
-    .package-list li:last-child{
-      border-bottom:none;
-    }
-
-    .package-name{
-      color:#dfeaff;
-      font-weight:500;
-      min-width:0;
-    }
-
-    .package-price{
-      color:#8fd3ff;
-      font-weight:700;
-      text-align:right;
-      white-space:nowrap;
-      flex-shrink:0;
-    }
-
-    .actions{
-      margin-top:20px;
-      position:relative;
-      z-index:1;
-    }
-
-    .btn{
-      width:100%;
-      min-height:54px;
-      border:none;
-      border-radius:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding:0 18px;
-      cursor:pointer;
-      font-size:1rem;
-      font-weight:800;
-      color:#fff;
-      background:linear-gradient(135deg, var(--blue-1), var(--blue-2));
-      box-shadow:0 10px 22px rgba(44,98,193,.24);
-      appearance:none;
-      -webkit-appearance:none;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .btn::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:linear-gradient(
-        115deg,
-        transparent 20%,
-        rgba(255,255,255,.28) 48%,
-        transparent 75%
-      );
-      transform:translateX(-130%);
-      animation:btnShine 2.8s linear infinite;
-    }
-
-    .btn:active{
-      transform:scale(.985);
-    }
-
-    .marquee-wrap{
-      margin-top:16px;
-      width:100%;
-      overflow:hidden;
-      position:relative;
-      z-index:1;
-      border-top:1px solid rgba(255,255,255,.07);
-      padding-top:12px;
-    }
-
-    .marquee{
-      width:100%;
-      overflow:hidden;
-      white-space:nowrap;
-    }
-
-    .marquee span{
-      display:inline-block;
-      padding-left:100%;
-      font-size:.88rem;
-      color:#dfeaff;
-      animation:marquee 18s linear infinite;
-      will-change:transform;
-    }
-
-    .footer-note{
-      margin-top:14px;
-      text-align:center;
-      font-size:.82rem;
-      color:var(--text-soft);
-      line-height:1.5;
-      position:relative;
-      z-index:1;
-    }
-
-    @keyframes marquee{
-      0%{ transform:translateX(0); }
-      100%{ transform:translateX(-100%); }
-    }
-
-    @keyframes btnShine{
-      0%{ transform:translateX(-130%); }
-      45%{ transform:translateX(130%); }
-      100%{ transform:translateX(130%); }
-    }
-
-    @media (max-width:420px){
-      body{
-        padding:12px;
-      }
-
-      .wrapper{
-        max-width:100%;
-      }
-
-      .card{
-        border-radius:var(--radius-sm);
-        padding:22px 16px 16px;
-      }
-
-      .logo-wrap{
-        width:76px;
-        height:76px;
-        border-radius:18px;
-      }
-
-      .brand h1{
-        font-size:1.16rem;
-      }
-
-      .online-badge{
-        font-size:.84rem;
-        padding:8px 10px;
-      }
-
-      .time-box{
-        padding:18px 12px;
-      }
-
-      .row{
-        gap:10px;
-        font-size:.92rem;
-      }
-
-      .row .right{
-        max-width:52%;
-        font-size:.9rem;
-      }
-
-      .package-list li{
-        font-size:.9rem;
-      }
-
-      .btn{
-        min-height:52px;
-      }
-
-      .marquee span{
-        font-size:.84rem;
-      }
-
-      .footer-note{
-        font-size:.78rem;
-      }
-    }
-
-    @media (max-width:340px){
-      .card{
-        padding:20px 14px 15px;
-      }
-
-      .brand h1{
-        font-size:1.06rem;
-      }
-
-      .row{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .row .right{
-        max-width:100%;
-        width:100%;
-        text-align:left;
-      }
-
-      .package-list li{
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .package-price{
-        white-space:normal;
-        text-align:left;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .marquee span{
-        animation:none;
-        padding-left:0;
-        white-space:normal;
-      }
-
-      .btn::before{
-        animation:none;
-      }
-
-      .online-badge{
-        transition:none;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status Hotspot</title>
+<link rel="icon" href="img/Home.Net.png" type="image/png" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+:root{
+  --bg:#071226;
+  --bg2:#0a1730;
+  --card:rgba(7,18,38,.72);
+  --line:rgba(255,255,255,.08);
+  --text:#eef4ff;
+  --blue1:#4b8df8;
+  --blue2:#3d7ff0;
+  --green:#22c55e;
+  --yellow:#facc15;
+  --red:#ef4444;
+  --purple:#a855f7;
+  --cyan:#38bdf8;
+  --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+  min-height:100dvh;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top center, rgba(78,140,255,.18), transparent 30%),
+    linear-gradient(180deg, var(--bg), var(--bg2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  overflow-x:hidden;
+}
+
+.wrapper{
+  width:100%;
+  max-width:420px;
+  position:relative;
+}
+
+.glow-orbit{
+  position:absolute;
+  inset:-60px;
+  z-index:0;
+  pointer-events:none;
+  filter:blur(30px);
+  animation:orbitSpin 16s linear infinite;
+}
+
+.glow-orbit::before{
+  content:"";
+  position:absolute;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  top:0;
+  left:5%;
+  background:rgba(59,130,246,.35);
+  box-shadow:
+    0 0 60px rgba(59,130,246,.35),
+    0 0 120px rgba(59,130,246,.25);
+  animation:pulse1 3.5s ease-in-out infinite;
+}
+
+.glow-orbit::after{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  bottom:0;
+  right:5%;
+  background:rgba(168,85,247,.35);
+  box-shadow:
+    0 0 60px rgba(168,85,247,.35),
+    0 0 120px rgba(168,85,247,.25);
+  animation:pulse2 4s ease-in-out infinite;
+}
+
+.scan-line{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+  border-radius:28px;
+}
+
+.scan-line::before{
+  content:"";
+  position:absolute;
+  left:-20%;
+  top:0;
+  width:140%;
+  height:2px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(96,165,250,.95),
+    rgba(168,85,247,.9),
+    transparent
+  );
+  box-shadow:
+    0 0 12px rgba(96,165,250,.65),
+    0 0 22px rgba(168,85,247,.35);
+  animation:scanDown 4.8s linear infinite;
+}
+
+.card{
+  position:relative;
+  z-index:1;
+  width:100%;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  padding:28px 20px 20px;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  pointer-events:none;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), transparent 24%);
+}
+
+.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  pointer-events:none;
+  border:1px solid rgba(96,165,250,.18);
+  box-shadow:
+    inset 0 0 18px rgba(96,165,250,.06),
+    0 0 18px rgba(96,165,250,.06);
+}
+
+.brand{
+  text-align:center;
+  margin-bottom:22px;
+}
+
+.logo{
+  width:92px;
+  height:92px;
+  margin:0 auto 14px;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:2rem;
+  font-weight:800;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.15) inset,
+    0 14px 30px rgba(79,140,255,.28);
+}
+
+.brand h1{
+  font-size:1.45rem;
+  font-weight:800;
+  letter-spacing:.2px;
+  color:#f5f8ff;
+  text-shadow:0 2px 0 rgba(0,0,0,.25);
+  line-height:1.2;
+  word-break:break-word;
+}
+
+/* PREMIUM ONLINE TOAST */
+
+.online-toast{
+  position:fixed;
+  top:18px;
+  left:18px;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 16px;
+  border-radius:999px;
+  color:#dcfce7;
+  font-size:.95rem;
+  font-weight:700;
+  opacity:0;
+  animation:onlineToast 5s ease forwards;
+}
+
+.premium-online{
+  background:linear-gradient(135deg, rgba(10,20,40,.92), rgba(18,34,62,.82));
+  border:1px solid rgba(255,255,255,.10);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 0 18px rgba(34,197,94,.10);
+}
+
+.premium-online i{
+  color:#86efac;
+  font-size:1rem;
+  text-shadow:0 0 10px rgba(34,197,94,.35);
+}
+
+.online-dot-wrap{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(34,197,94,.10);
+  box-shadow:0 0 14px rgba(34,197,94,.12);
+  flex:0 0 auto;
+}
+
+.online-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:
+    0 0 10px rgba(34,197,94,.85),
+    0 0 18px rgba(34,197,94,.45);
+  animation:onlinePulse 1.8s ease-in-out infinite;
+}
+
+/* STATUS WIDGETS */
+
+.status-widgets{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:10px;
+  margin:4px 0 18px;
+}
+
+.status-widget{
+  position:relative;
+  padding:13px 10px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.035);
+  overflow:hidden;
+  box-shadow:
+    inset 0 0 14px rgba(255,255,255,.02),
+    0 10px 24px rgba(0,0,0,.12);
+}
+
+.status-widget::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), transparent 70%);
+  pointer-events:none;
+}
+
+.status-widget .icon{
+  width:38px;
+  height:38px;
+  margin:0 auto 8px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  box-shadow:0 0 14px rgba(75,141,248,.12);
+}
+
+.status-widget .name{
+  font-size:.76rem;
+  color:#9fb3d9;
+  text-align:center;
+  margin-bottom:5px;
+}
+
+.status-widget .value{
+  font-size:.9rem;
+  font-weight:800;
+  text-align:center;
+  color:#f5f8ff;
+  line-height:1.25;
+  word-break:break-word;
+}
+
+.status-widget.live .icon{
+  background:rgba(34,197,94,.14);
+  border:1px solid rgba(34,197,94,.24);
+  color:#86efac;
+}
+
+.status-widget.live .value{
+  color:#dcfce7;
+}
+
+.status-widget.signal .icon{
+  background:rgba(56,189,248,.14);
+  border:1px solid rgba(56,189,248,.24);
+  color:#7dd3fc;
+}
+
+.status-widget.secure .icon{
+  background:rgba(168,85,247,.14);
+  border:1px solid rgba(168,85,247,.24);
+  color:#d8b4fe;
+}
+
+/* ALERT */
+
+.alert-box{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:11;
+  max-width:320px;
+  padding:14px 16px;
+  border-radius:18px;
+  background:rgba(239,68,68,.16);
+  border:1px solid rgba(239,68,68,.28);
+  color:#ffe1e5;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 18px 40px rgba(0,0,0,.24);
+  display:none;
+  animation:alertIn .35s ease;
+}
+
+.alert-box.show{
+  display:block;
+}
+
+/* TIME BOX */
+
+.time-box{
+  margin:8px 0 22px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:24px 16px;
+  text-align:center;
+  background:rgba(5,14,30,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+}
+
+.time-box .label{
+  font-size:.98rem;
+  color:#f0f6ff;
+  margin-bottom:10px;
+}
+
+.time-box .time{
+  font-size:clamp(1.9rem, 6vw, 3rem);
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-1px;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+  transition:color .25s ease, text-shadow .25s ease;
+  overflow-wrap:anywhere;
+}
+
+.time-box.safe .time{
+  color:var(--green);
+  text-shadow:0 0 10px rgba(34,197,94,.22), 0 2px 0 rgba(0,0,0,.18);
+}
+
+.time-box.warn .time{
+  color:var(--yellow);
+  text-shadow:0 0 10px rgba(250,204,21,.18), 0 2px 0 rgba(0,0,0,.18);
+}
+
+.time-box.danger .time{
+  color:var(--red);
+  text-shadow:0 0 12px rgba(239,68,68,.24), 0 2px 0 rgba(0,0,0,.18);
+  animation:dangerPulse 1.1s ease-in-out infinite;
+}
+
+/* CONNECTION DETAILS */
+
+.connection-box{
+  margin-top:6px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  background:rgba(255,255,255,.04);
+  box-shadow:0 0 12px rgba(59,130,246,.08) inset;
+  overflow:hidden;
+}
+
+.connection-toggle{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:15px 16px;
+  cursor:pointer;
+  text-align:left;
+}
+
+.connection-toggle-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+
+.connection-toggle-icon{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(75,141,248,.14);
+  border:1px solid rgba(75,141,248,.22);
+  color:#bcd6ff;
+  flex:0 0 auto;
+}
+
+.connection-toggle-title{
+  font-size:.96rem;
+  font-weight:800;
+  color:#f5f8ff;
+}
+
+.connection-toggle-sub{
+  font-size:.8rem;
+  color:#9fb3d9;
+  margin-top:2px;
+}
+
+.connection-arrow{
+  font-size:1rem;
+  color:#bcd6ff;
+  transition:transform .25s ease;
+  flex:0 0 auto;
+}
+
+.connection-box.collapsed .connection-arrow{
+  transform:rotate(-90deg);
+}
+
+.connection-content{
+  max-height:420px;
+  overflow:hidden;
+  transition:max-height .28s ease, opacity .25s ease, padding .25s ease;
+  opacity:1;
+}
+
+.connection-box.collapsed .connection-content{
+  max-height:0;
+  opacity:0;
+}
+
+.rows{
+  padding:0 16px 12px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  padding:13px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:.96rem;
+}
+
+.row:last-child{
+  border-bottom:none;
+}
+
+.row .left,
+.row .right{
+  font-weight:500;
+  overflow-wrap:anywhere;
+}
+
+.row .left{
+  text-align:left;
+}
+
+.row .right{
+  text-align:right;
+  max-width:58%;
+}
+
+/* PACKAGE LIST */
+
+.package-box{
+  margin-top:18px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  padding:16px 14px;
+  background:rgba(255,255,255,.04);
+  box-shadow:0 0 12px rgba(59,130,246,.15) inset;
+}
+
+.package-title{
+  font-size:.95rem;
+  font-weight:800;
+  color:#f5f8ff;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.package-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.package-list li{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 0 10px 18px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-size:.92rem;
+  position:relative;
+}
+
+.package-list li:last-child{
+  border-bottom:none;
+}
+
+.package-list li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#4b8df8;
+  box-shadow:
+    0 0 6px #4b8df8,
+    0 0 12px #4b8df8;
+}
+
+.package-name{
+  color:#dfeaff;
+  font-weight:500;
+}
+
+.package-price{
+  color:#8fd3ff;
+  font-weight:700;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* ACTIONS */
+
+.actions{
+  margin-top:22px;
+}
+
+.actions form{
+  margin:0;
+}
+
+.btn{
+  width:100%;
+  min-height:56px;
+  padding:0 20px;
+  border:none;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  text-decoration:none;
+  font-size:1rem;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+.btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.28) 48%, transparent 75%);
+  transform:translateX(-130%);
+}
+
+.btn:hover::before{
+  animation:shine .85s ease;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.btn:active{
+  transform:scale(.985);
+}
+
+.btn-blue{
+  color:#fff;
+  background:linear-gradient(135deg, var(--blue1), var(--blue2));
+  box-shadow:
+    0 0 18px rgba(73,136,248,.38),
+    0 14px 28px rgba(44,98,193,.30);
+}
+
+.btn-blue:hover{
+  box-shadow:
+    0 0 28px rgba(73,136,248,.55),
+    0 16px 32px rgba(44,98,193,.36);
+  filter:brightness(1.03);
+}
+
+/* MARQUEE */
+
+.marquee-wrap{
+  margin-top:16px;
+  width:100%;
+  overflow:hidden;
+}
+
+.marquee{
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.marquee span{
+  display:inline-block;
+  padding-left:100%;
+  font-size:.9rem;
+  color:#f3f7ff;
+  animation:marquee 15s linear infinite;
+}
+
+/* FOOTER */
+
+.footer{
+  margin-top:18px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.08);
+  text-align:center;
+  font-size:.82rem;
+  color:#9fb3d9;
+  letter-spacing:.3px;
+}
+
+.footer span{
+  color:#eaf1ff;
+  font-weight:600;
+}
+
+/* ANIMATIONS */
+
+@keyframes shine{
+  to{ transform:translateX(130%); }
+}
+
+@keyframes marquee{
+  0%{ transform:translateX(0); }
+  100%{ transform:translateX(-100%); }
+}
+
+@keyframes onlineToast{
+  0%{ opacity:0; transform:translateY(-10px); }
+  10%{ opacity:1; transform:translateY(0); }
+  85%{ opacity:1; transform:translateY(0); }
+  100%{ opacity:0; transform:translateY(-10px); }
+}
+
+@keyframes onlinePulse{
+  0%,100%{
+    transform:scale(1);
+    opacity:1;
+  }
+  50%{
+    transform:scale(1.18);
+    opacity:.78;
+  }
+}
+
+@keyframes alertIn{
+  from{ opacity:0; transform:translateY(-10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+@keyframes dangerPulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:.75; }
+}
+
+@keyframes orbitSpin{
+  0%{ transform:rotate(0deg); }
+  100%{ transform:rotate(360deg); }
+}
+
+@keyframes pulse1{
+  0%,100%{
+    transform:scale(1);
+    opacity:.72;
+  }
+  50%{
+    transform:scale(1.2);
+    opacity:1;
+  }
+}
+
+@keyframes pulse2{
+  0%,100%{
+    transform:scale(1);
+    opacity:.68;
+  }
+  50%{
+    transform:scale(1.25);
+    opacity:1;
+  }
+}
+
+@keyframes scanDown{
+  0%{
+    top:-10%;
+    opacity:0;
+  }
+  10%{
+    opacity:1;
+  }
+  90%{
+    opacity:1;
+  }
+  100%{
+    top:110%;
+    opacity:0;
+  }
+}
+
+@media (max-width:640px){
+  body{
+    padding:14px;
+    align-items:center;
+  }
+
+  .wrapper{
+    width:100%;
+    max-width:420px;
+  }
+
+  .card{
+    border-radius:24px;
+    padding:24px 18px 18px;
+  }
+
+  .card::before,
+  .card::after,
+  .scan-line{
+    border-radius:24px;
+  }
+
+  .brand{
+    margin-bottom:20px;
+  }
+
+  .logo{
+    width:78px;
+    height:78px;
+    font-size:1.6rem;
+    border-radius:20px;
+  }
+
+  .status-widgets{
+    gap:8px;
+  }
+
+  .status-widget{
+    padding:12px 8px;
+  }
+
+  .time-box{
+    border-radius:20px;
+    padding:20px 14px;
+    margin-bottom:20px;
+  }
+
+  .btn{
+    min-height:54px;
+  }
+
+  .footer{
+    text-align:center;
+    font-size:.8rem;
+    line-height:1.6;
+  }
+
+  .online-toast,
+  .alert-box{
+    left:14px;
+    right:14px;
+    max-width:none;
+  }
+
+  .alert-box{
+    top:70px;
+  }
+}
+
+@media (max-width:420px){
+  .card{
+    border-radius:22px;
+    padding:22px 16px 18px;
+  }
+
+  .card::before,
+  .card::after,
+  .scan-line{
+    border-radius:22px;
+  }
+
+  .status-widgets{
+    grid-template-columns:1fr;
+  }
+
+  .row{
+    gap:10px;
+    padding:12px 0;
+  }
+
+  .row .right{
+    max-width:52%;
+    font-size:.9rem;
+  }
+
+  .package-list li{
+    gap:10px;
+    font-size:.9rem;
+  }
+
+  .marquee span{
+    font-size:.84rem;
+  }
+}
+
+.package-box.collapsed .connection-arrow{
+  transform:rotate(-90deg);
+}
+
+.package-box.collapsed .connection-content{
+  max-height:0;
+  opacity:0;
+  overflow:hidden;
+}
+
+</style>
 </head>
 <body>
 
+  <div class="online-toast premium-online">
+    <span class="online-dot-wrap">
+      <span class="online-dot"></span>
+    </span>
+    <i class="bi bi-broadcast-pin"></i>
+    <span>Anda sedang online</span>
+  </div>
+
+  <div class="alert-box" id="timeAlert">
+    Waktu voucher kamu tinggal 5 menit. Siap-siap isi ulang ya.
+  </div>
+
   <div class="wrapper">
+    <div class="glow-orbit"></div>
+    <div class="scan-line"></div>
+
     <div class="card">
-
       <div class="brand">
-        <div class="logo-wrap">
-          <img src="img/Home.Net.png" alt="Home.Net" class="logo" />
+        <div>
+          <img src="img/Home.Net.png" alt="Home.Net" class="logo">
         </div>
-        <h1>Selamat datang di Home.Net</h1>
+        <h1>Selamat Datang 😉</h1>
       </div>
 
-      <div class="online-badge" id="onlineBadge">
-        <span class="online-dot"></span>
-        <span>Anda sedang online</span>
-      </div>
+      <div class="status-widgets">
+        <div class="status-widget live">
+          <div class="icon">
+            <i class="bi bi-wifi"></i>
+          </div>
+          <div class="name">Status</div>
+          <div class="value">Terhubung</div>
+        </div>
 
-      <div class="alert-box" id="timeAlert">
-        Waktu voucher kamu tinggal 5 menit. Siap-siap isi ulang ya.
+        <div class="status-widget signal">
+          <div class="icon">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <div class="name">Koneksi</div>
+          <div class="value">Stabil</div>
+        </div>
+
+        <div class="status-widget secure">
+          <div class="icon">
+            <i class="bi bi-shield-lock"></i>
+          </div>
+          <div class="name">Akses</div>
+          <div class="value">Aman</div>
+        </div>
       </div>
 
       <div class="time-box safe" id="timeBox">
@@ -528,66 +936,93 @@
         <div class="time" id="sessionTime">$(session-time-left)</div>
       </div>
 
-      <div class="rows">
-        <div class="row">
-          <div class="left">IP</div>
-          <div class="right">$(ip)</div>
-        </div>
+      <div class="connection-box" id="connectionBox">
+        <button class="connection-toggle" id="connectionToggle" type="button" aria-expanded="true">
+          <div class="connection-toggle-left">
+            <div class="connection-toggle-icon">
+              <i class="bi bi-router"></i>
+            </div>
+            <div>
+              <div class="connection-toggle-title">Detail Koneksi</div>
+              <div class="connection-toggle-sub">IP, user, upload, download, online</div>
+            </div>
+          </div>
+          <i class="bi bi-chevron-down connection-arrow"></i>
+        </button>
 
-        <div class="row">
-          <div class="left">User</div>
-          <div class="right">$(username)</div>
-        </div>
+        <div class="connection-content" id="connectionContent">
+          <div class="rows">
+            <div class="row">
+              <div class="left">IP</div>
+              <div class="right">$(ip)</div>
+            </div>
 
-        <div class="row">
-          <div class="left">Upload</div>
-          <div class="right">$(bytes-out-nice)</div>
-        </div>
+            <div class="row">
+              <div class="left">User</div>
+              <div class="right">$(username)</div>
+            </div>
 
-        <div class="row">
-          <div class="left">Download</div>
-          <div class="right">$(bytes-in-nice)</div>
-        </div>
+            <div class="row">
+              <div class="left">Upload</div>
+              <div class="right">$(bytes-out-nice)</div>
+            </div>
 
-        <div class="row">
-          <div class="left">Online</div>
-          <div class="right">$(uptime)</div>
+            <div class="row">
+              <div class="left">Download</div>
+              <div class="right">$(bytes-in-nice)</div>
+            </div>
+
+            <div class="row">
+              <div class="left">Online</div>
+              <div class="right">$(uptime)</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="package-box">
-        <div class="package-title">
-          <i class="bi bi-lightning-charge-fill"></i>
-          <span>List Paket & Harga</span>
-        </div>
-
-        <ul class="package-list">
-          <li>
-            <span class="package-name">Paket 2 Jam</span>
-            <span class="package-price">Rp2.000</span>
-          </li>
-          <li>
-            <span class="package-name">Paket 6 Jam</span>
-            <span class="package-price">Rp5.000</span>
-          </li>
-          <li>
-            <span class="package-name">Paket 12 Jam</span>
-            <span class="package-price">Rp8.000</span>
-          </li>
-          <li>
-            <span class="package-name">Paket 24 Jam</span>
-            <span class="package-price">Rp10.000</span>
-          </li>
-          <li>
-            <span class="package-name">Paket 3 Hari</span>
-            <span class="package-price">Rp25.000</span>
-          </li>
-        </ul>
+      <div class="package-box" id="packageBox">
+  <button class="connection-toggle" id="packageToggle" type="button">
+    <div class="connection-toggle-left">
+      <div class="connection-toggle-icon">
+        <i class="bi bi-lightning-charge-fill"></i>
       </div>
+      <div>
+        <div class="connection-toggle-title">List Paket & Harga</div>
+        <div class="connection-toggle-sub">Pilih paket sesuai kebutuhan</div>
+      </div>
+    </div>
+    <i class="bi bi-chevron-down connection-arrow"></i>
+  </button>
+
+  <div class="connection-content" id="packageContent">
+    <ul class="package-list">
+      <li>
+        <span class="package-name">Paket 2 Jam</span>
+        <span class="package-price">Rp2.000</span>
+      </li>
+      <li>
+        <span class="package-name">Paket 6 Jam</span>
+        <span class="package-price">Rp5.000</span>
+      </li>
+      <li>
+        <span class="package-name">Paket 12 Jam</span>
+        <span class="package-price">Rp8.000</span>
+      </li>
+      <li>
+        <span class="package-name">Paket 24 Jam</span>
+        <span class="package-price">Rp10.000</span>
+      </li>
+      <li>
+        <span class="package-name">Paket 3 Hari</span>
+        <span class="package-price">Rp25.000</span>
+      </li>
+    </ul>
+  </div>
+</div>
 
       <div class="actions">
-        <form action="$(link-logout)" method="post" id="logoutForm">
-          <button class="btn" type="submit">
+        <form action="$(link-logout)" method="post">
+          <button class="btn btn-blue" type="submit">
             <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>
           </button>
@@ -596,141 +1031,180 @@
 
       <div class="marquee-wrap">
         <div class="marquee">
-          <span>📡 Home.Net Hotspot • 🚀 Internet cepat stabil • 🎫 Gunakan voucher dengan benar • ⚠️ Jangan share kode • ❤️ Terima kasih sudah menggunakan layanan kami</span>
+          <span>
+            📡 Home.Net Hotspot • 🚀 Internet cepat stabil • 🎫 Gunakan voucher dengan benar • ⚠️ Jangan share kode • ❤️ Terima kasih sudah menggunakan layanan kami
+          </span>
         </div>
       </div>
 
-      <div class="footer-note">
+      <div class="footer">
         © 2026 Home.Net • Powered by MikroTik | Muhammad Rafiq Amin
       </div>
     </div>
   </div>
 
-  <script>
-    (function () {
-      const timeBox = document.getElementById("timeBox");
-      const sessionTime = document.getElementById("sessionTime");
-      const timeAlert = document.getElementById("timeAlert");
-      const logoutForm = document.getElementById("logoutForm");
-      const onlineBadge = document.getElementById("onlineBadge");
+<script>
+const timeBox = document.getElementById('timeBox');
+const sessionTime = document.getElementById('sessionTime');
+const timeAlert = document.getElementById('timeAlert');
+const rawTime = sessionTime.textContent.trim();
 
-      if (!timeBox || !sessionTime || !timeAlert || !logoutForm) return;
+const connectionBox = document.getElementById('connectionBox');
+const connectionToggle = document.getElementById('connectionToggle');
 
-      if (onlineBadge) {
-        setTimeout(function () {
-          onlineBadge.classList.add("hide");
+function parseTimeToMinutes(value) {
+  if (!value) return null;
 
-          setTimeout(function () {
-            onlineBadge.style.display = "none";
-          }, 400);
-        }, 5000);
-      }
+  const text = String(value).trim().toLowerCase();
+  let total = 0;
+  let found = false;
 
-      const rawTime = (sessionTime.textContent || "").trim();
-      let autoLogoutTriggered = false;
+  const day = text.match(/(\d+)\s*d/);
+  const hour = text.match(/(\d+)\s*h/);
+  const minute = text.match(/(\d+)\s*m/);
+  const second = text.match(/(\d+)\s*s/);
 
-      function parseTimeToSeconds(value) {
-        if (!value) return null;
+  if (day) {
+    total += parseInt(day[1], 10) * 1440;
+    found = true;
+  }
 
-        const text = String(value).trim().toLowerCase();
-        if (!text || text.includes("$(")) return null;
+  if (hour) {
+    total += parseInt(hour[1], 10) * 60;
+    found = true;
+  }
 
-        let total = 0;
-        let found = false;
+  if (minute) {
+    total += parseInt(minute[1], 10);
+    found = true;
+  }
 
-        const day = text.match(/(\d+)\s*d/);
-        const hour = text.match(/(\d+)\s*h/);
-        const minute = text.match(/(\d+)\s*m/);
-        const second = text.match(/(\d+)\s*s/);
+  if (second) {
+    total += Math.ceil(parseInt(second[1], 10) / 60);
+    found = true;
+  }
 
-        if (day) {
-          total += parseInt(day[1], 10) * 86400;
-          found = true;
-        }
+  if (!found) {
+    const parts = text.split(':').map(Number);
 
-        if (hour) {
-          total += parseInt(hour[1], 10) * 3600;
-          found = true;
-        }
+    if (parts.length === 3 && parts.every(n => !isNaN(n))) {
+      total = (parts[0] * 60) + parts[1] + Math.ceil(parts[2] / 60);
+      found = true;
+    } else if (parts.length === 2 && parts.every(n => !isNaN(n))) {
+      total = parts[0] + Math.ceil(parts[1] / 60);
+      found = true;
+    }
+  }
 
-        if (minute) {
-          total += parseInt(minute[1], 10) * 60;
-          found = true;
-        }
+  return found ? total : null;
+}
 
-        if (second) {
-          total += parseInt(second[1], 10);
-          found = true;
-        }
+const minutesLeft = parseTimeToMinutes(rawTime);
 
-        if (!found) {
-          const parts = text.split(":").map(function (item) {
-            return parseInt(item, 10);
-          });
+if (minutesLeft !== null) {
+  timeBox.classList.remove('safe', 'warn', 'danger');
 
-          const valid = parts.length >= 2 && parts.every(function (num) {
-            return !isNaN(num);
-          });
+  if (minutesLeft <= 5) {
+    timeBox.classList.add('danger');
+    timeAlert.classList.add('show');
+  } else if (minutesLeft < 15) {
+    timeBox.classList.add('warn');
+  } else {
+    timeBox.classList.add('safe');
+  }
+}
 
-          if (valid && parts.length === 3) {
-            total = (parts[0] * 3600) + (parts[1] * 60) + parts[2];
-            found = true;
-          } else if (valid && parts.length === 2) {
-            total = (parts[0] * 60) + parts[1];
-            found = true;
-          }
-        }
+/* connection state */
+const CONNECTION_STATE_KEY = 'homeNetConnectionCollapsed';
 
-        return found ? total : null;
-      }
+function setConnectionState(collapsed) {
+  connectionBox.classList.toggle('collapsed', collapsed);
+  connectionToggle.setAttribute('aria-expanded', String(!collapsed));
+  localStorage.setItem(CONNECTION_STATE_KEY, collapsed ? 'true' : 'false');
+}
 
-      function updateState(secondsLeft) {
-        const minutesLeft = Math.ceil(secondsLeft / 60);
+function getDefaultConnectionState() {
+  return window.matchMedia("(max-width: 640px)").matches;
+}
 
-        timeBox.classList.remove("safe", "warn", "danger");
-        timeAlert.classList.remove("show");
+function initConnectionState() {
+  const savedState = localStorage.getItem(CONNECTION_STATE_KEY);
 
-        if (secondsLeft <= 0) {
-          timeBox.classList.add("danger");
-          if (!autoLogoutTriggered) {
-            autoLogoutTriggered = true;
-            logoutForm.submit();
-          }
-          return;
-        }
+  if (savedState === 'true') {
+    setConnectionState(true);
+  } else if (savedState === 'false') {
+    setConnectionState(false);
+  } else {
+    setConnectionState(getDefaultConnectionState());
+  }
+}
 
-        if (minutesLeft <= 5) {
-          timeBox.classList.add("danger");
-          timeAlert.classList.add("show");
-        } else if (minutesLeft < 15) {
-          timeBox.classList.add("warn");
-        } else {
-          timeBox.classList.add("safe");
-        }
-      }
+connectionToggle.addEventListener('click', function () {
+  const collapsed = !connectionBox.classList.contains('collapsed');
+  setConnectionState(collapsed);
+});
 
-      let secondsLeft = parseTimeToSeconds(rawTime);
+initConnectionState();
 
-      if (secondsLeft === null) {
-        timeBox.classList.add("safe");
-        return;
-      }
+/* auto refresh saat halaman dibuka kembali */
+window.addEventListener('pageshow', function (event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
 
-      updateState(secondsLeft);
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') {
+    sessionStorage.setItem('lastHiddenAt', String(Date.now()));
+    return;
+  }
 
-      const timer = setInterval(function () {
-        secondsLeft--;
+  if (document.visibilityState === 'visible') {
+    const lastHidden = sessionStorage.getItem('lastHiddenAt');
+    if (!lastHidden) return;
 
-        if (secondsLeft < 0) {
-          clearInterval(timer);
-          updateState(0);
-          return;
-        }
+    const diff = Date.now() - Number(lastHidden);
+    if (diff > 1500) {
+      window.location.reload();
+    }
+  }
+});
 
-        updateState(secondsLeft);
-      }, 1000);
-    })();
-  </script>
+const packageBox = document.getElementById('packageBox');
+const packageToggle = document.getElementById('packageToggle');
+
+const PACKAGE_STATE_KEY = 'homeNetPackageCollapsed';
+
+function setPackageState(collapsed) {
+  packageBox.classList.toggle('collapsed', collapsed);
+  packageToggle.setAttribute('aria-expanded', String(!collapsed));
+  localStorage.setItem(PACKAGE_STATE_KEY, collapsed ? 'true' : 'false');
+}
+
+function getDefaultPackageState() {
+  return window.matchMedia("(max-width: 640px)").matches;
+}
+
+function initPackageState() {
+  const savedState = localStorage.getItem(PACKAGE_STATE_KEY);
+
+  if (savedState === 'true') {
+    setPackageState(true);
+  } else if (savedState === 'false') {
+    setPackageState(false);
+  } else {
+    setPackageState(getDefaultPackageState());
+  }
+}
+
+packageToggle.addEventListener('click', function () {
+  const collapsed = !packageBox.classList.contains('collapsed');
+  setPackageState(collapsed);
+});
+
+initPackageState();
+
+</script>
 
 </body>
 </html>
