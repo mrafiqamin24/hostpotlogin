@@ -1526,14 +1526,18 @@ function applyQrFeatureAvailability(){
     hideCameraFeature();
   }
 
+  if (openQrBtn) {
+    openQrBtn.style.display = (qrSupport.camera || qrSupport.upload) ? '' : 'none';
+  }
+
   if (!qrSupport.camera && qrSupport.upload) {
     setQrStatus('Browser ini gak support akses kamera buat scan langsung. Tapi kamu masih bisa pakai Upload QR.');
   } else if (!qrSupport.camera && !qrSupport.upload) {
     setQrStatus('Browser ini belum support scan QR. Tetap bisa login manual pakai kode voucher.');
   }
 
-  if (qrActions && !qrSupport.camera && !qrSupport.upload) {
-    qrActions.style.display = 'none';
+  if (qrActions) {
+    qrActions.style.display = (qrSupport.camera || qrSupport.upload) ? '' : 'none';
   }
 }
 
