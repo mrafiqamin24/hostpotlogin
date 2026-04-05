@@ -1480,7 +1480,7 @@ let qrDetector = null;
 let qrScanning = false;
 let isAutoLoggingIn = false;
 let qrCanvas = document.getElementById('qrCanvas');
-let qrCanvasCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
+let qrCanvasCtx = qrCanvas.getContext('2d', { willReadFrequently: true }) || qrCanvas.getContext('2d');
 let lastQrScanAt = 0;
 const qrScanInterval = 180;
 
@@ -1652,6 +1652,31 @@ function readQrFromCanvas(){
   return null;
 }
 
+function createImageBitmapFallback(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = function(){
+      resolve({
+        width: img.naturalWidth || img.width,
+        height: img.naturalHeight || img.height,
+        source: img,
+        close(){
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+
+    img.onerror = function(){
+      URL.revokeObjectURL(url);
+      reject(new Error('Gagal memuat gambar'));
+    };
+
+    img.src = url;
+  });
+}
+
 async function scanQrFrame(timestamp = 0){
   if (!qrScanning || isAutoLoggingIn) return;
 
@@ -1693,13 +1718,16 @@ qrImageInput.addEventListener('change', async (event) => {
   if (!file) return;
 
   try {
-    const imageBitmap = await createImageBitmap(file);
+    const imageBitmap = typeof createImageBitmap === 'function'
+      ? await createImageBitmap(file)
+      : await createImageBitmapFallback(file);
     const width = imageBitmap.width;
     const height = imageBitmap.height;
+    const imageSource = imageBitmap.source || imageBitmap;
 
     qrCanvas.width = width;
     qrCanvas.height = height;
-    qrCanvasCtx.drawImage(imageBitmap, 0, 0, width, height);
+    qrCanvasCtx.drawImage(imageSource, 0, 0, width, height);
 
     let rawValue = '';
 
@@ -1779,6 +1807,49 @@ if (!reduceMotion && window.innerWidth > 768) {
     loginCard.style.setProperty('--my', '50%');
   });
 }
+// === AUTO DETECT CAMERA SUPPORT ===
+(function(){
+  const scanBtn = document.getElementById('scanBtn');
+  if(!scanBtn) return;
+
+  function hideScan(){
+    scanBtn.style.display = "none";
+  }
+
+  function isSecure(){
+    return location.protocol === "https:" || location.hostname === "localhost";
+  }
+
+  function hasCameraAPI(){
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+
+  function isOldBrowser(){
+    return !window.Promise || !navigator.mediaDevices;
+  }
+
+  // cek basic support
+  if(!hasCameraAPI() || isOldBrowser()){
+    hideScan();
+    return;
+  }
+
+  // cek secure context (penting buat banyak browser)
+  if(!isSecure()){
+    // beberapa android masih bisa, tapi kita safe aja
+    // coba test cepat permission tanpa buka kamera lama
+    navigator.mediaDevices.getUserMedia({video:true})
+      .then(stream=>{
+        stream.getTracks().forEach(t=>t.stop());
+      })
+      .catch(()=>{
+        hideScan();
+      });
+  }
+
+})();
+scanBtn.style.opacity = "0";
+scanBtn.style.pointerEvents = "none";
 </script>
 
 </body>
