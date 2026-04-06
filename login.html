@@ -960,18 +960,25 @@ body::after{
   z-index:1;
 }
 
+/* PERBAIKAN: Teks tombol di tengah secara vertikal & horizontal */
 .qr-action-btn{
-  flex:1 1 120px;
-  min-height:48px;
-  border-radius:16px;
-  border:1px solid rgba(96,165,250,.14);
+  flex: 1 1 120px;
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(96,165,250,.14);
   background:
     linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015)),
     rgba(255,255,255,.02);
-  color:#eef4ff;
-  font-weight:700;
-  cursor:pointer;
-  transition:.2s ease;
+  color: #eef4ff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+  gap: 6px;
 }
 
 .qr-action-btn:hover{
@@ -1233,6 +1240,11 @@ body::after{
     padding:14px;
     border-radius:22px;
   }
+  
+  .qr-action-btn{
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
 }
 </style>
 </head>
@@ -1352,8 +1364,8 @@ body::after{
     </div>
 
     <div class="qr-actions" id="qrActions">
-      <button type="button" class="qr-action-btn primary" id="startQrBtn">Nyalakan Kamera</button>
-      <button type="button" class="qr-action-btn" id="uploadQrBtn">Upload QR</button>
+      <button type="button" class="qr-action-btn primary" id="startQrBtn">📷 Nyalakan Kamera</button>
+      <button type="button" class="qr-action-btn" id="uploadQrBtn">📤 Upload QR</button>
     </div>
 
     <input type="file" id="qrImageInput" accept="image/*" />
@@ -1546,11 +1558,12 @@ function updateQrButtonsVisibility() {
   const openQrButton = document.getElementById('openQrBtn');
   const startQrButton = document.getElementById('startQrBtn');
   const uploadQrButton = document.getElementById('uploadQrBtn');
+  const qrActionsDiv = document.getElementById('qrActions');
   
   // Kasus 1: Tidak support kamera & tidak support upload -> tombol QR HILANG TOTAL
   if (!qrSupport.camera && !qrSupport.upload) {
     if (openQrButton) openQrButton.style.display = 'none';
-    if (qrActions) qrActions.style.display = 'none';
+    if (qrActionsDiv) qrActionsDiv.style.display = 'none';
     if (qrStatus) qrStatus.innerHTML = '❌ Browser tidak mendukung scan QR. Silakan masukkan kode voucher secara manual.';
     return;
   }
@@ -1560,6 +1573,7 @@ function updateQrButtonsVisibility() {
     if (openQrButton) openQrButton.style.display = 'flex';
     if (startQrButton) startQrButton.style.display = 'none';
     if (uploadQrButton) uploadQrButton.style.display = 'flex';
+    if (qrActionsDiv) qrActionsDiv.style.display = 'flex';
     if (qrStatus) qrStatus.innerHTML = '📷 Kamera tidak tersedia/diblokir. Gunakan tombol "Upload QR" untuk membaca voucher dari gambar.';
     return;
   }
@@ -1569,44 +1583,13 @@ function updateQrButtonsVisibility() {
     if (openQrButton) openQrButton.style.display = 'flex';
     if (startQrButton) startQrButton.style.display = 'flex';
     if (uploadQrButton) uploadQrButton.style.display = 'flex';
-    if (qrActions) qrActions.style.display = 'flex';
+    if (qrActionsDiv) qrActionsDiv.style.display = 'flex';
     if (qrStatus) qrStatus.innerHTML = '🎥 Arahkan kamera ke QR code voucher. Begitu kebaca, voucher langsung keisi dan auto login.';
     return;
   }
 }
 
-// Override startQrScanner untuk handle permission ditolak
-const originalStartQrScanner = startQrBtn ? startQrBtn.onclick : null;
-
 // Fungsi untuk mengecek permission kamera sebelum memulai scan
-async function startQrScannerWithPermission() {
-  if (!qrSupport.camera) {
-    setQrStatus('Kamera tidak tersedia. Gunakan tombol Upload QR.');
-    return;
-  }
-  
-  if (!window.isSecureContext) {
-    setQrStatus('Kamera butuh HTTPS atau localhost. Kalau masih HTTP biasa, kamera gak bisa dibuka.');
-    return;
-  }
-  
-  try {
-    // Minta permission kamera dulu
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    // Stop stream sementara, kita akan mulai ulang di startQrScanner asli
-    stream.getTracks().forEach(track => track.stop());
-    
-    // Permission granted, lanjutkan scan
-    await startQrScanner();
-  } catch (err) {
-    // Permission denied atau error
-    setQrStatus('❌ Akses kamera ditolak atau gagal. Gunakan tombol Upload QR.');
-    qrSupport.camera = false;
-    updateQrButtonsVisibility();
-  }
-}
-
-// Wrapper untuk start scanner
 async function startQrScanner() {
   if (!qrSupport.camera) {
     setQrStatus('Kamera tidak tersedia. Gunakan tombol Upload QR.');
