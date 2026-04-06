@@ -1497,7 +1497,7 @@ let qrCanvasCtx = qrCanvas.getContext('2d', { willReadFrequently: true });
 let lastQrScanAt = 0;
 const qrScanInterval = 180;
 
-// ========== LOGIKA FITUR QR BERDASARKAN DUKUNGAN BROWSER ==========
+// ========== LOGIKA FITUR QR BERDASARKAN DUKUNGAN BROWSER (DIPERBAIKI) ==========
 let qrSupport = {
   camera: false,
   upload: false
@@ -1508,17 +1508,41 @@ function isBarcodeDetectorSupported() {
   return 'BarcodeDetector' in window;
 }
 
-// Cek apakah kamera bisa diakses (perlu user permission)
+// Cek apakah kamera bisa diakses dengan trial getUserMedia (lebih akurat)
 async function checkCameraSupport() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+  // Cek apakah API getUserMedia tersedia
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    console.log('getUserMedia tidak tersedia');
+    return false;
+  }
+  
+  // Cek apakah secure context (HTTPS atau localhost)
+  const isSecure = window.isSecureContext === true || 
+                   location.protocol === 'https:' || 
+                   location.hostname === 'localhost' || 
+                   location.hostname === '127.0.0.1';
+  
+  if (!isSecure) {
+    console.log('Bukan secure context (HTTPS/localhost)');
     return false;
   }
   
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const hasVideoInput = devices.some(device => device.kind === 'videoinput');
-    return hasVideoInput;
+    // Trial akses kamera sebentar untuk cek apakah ada kamera dan permission belum ditolak
+    // Gunakan constraints minimal untuk cek keberadaan kamera
+    const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+    // Jika berhasil, stop stream-nya
+    testStream.getTracks().forEach(track => track.stop());
+    console.log('Kamera tersedia dan bisa diakses');
+    return true;
   } catch (err) {
+    console.log('Kamera tidak tersedia atau akses ditolak:', err.name);
+    // Jika error NotAllowedError, artinya permission ditolak (tapi kamera ada)
+    // Kita tetap anggap kamera secara hardware ada, hanya perlu izin user nanti
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      console.log('Permission kamera ditolak, tapi hardware kamera mungkin ada');
+      return true; // Anggap ada kamera, nanti minta izin saat scan
+    }
     return false;
   }
 }
@@ -1529,8 +1553,11 @@ async function checkBarcodeDetectorQrSupport() {
   
   try {
     const formats = await BarcodeDetector.getSupportedFormats();
-    return formats.includes('qr_code');
+    const supportsQr = formats.includes('qr_code');
+    console.log('BarcodeDetector support QR:', supportsQr);
+    return supportsQr;
   } catch (err) {
+    console.log('BarcodeDetector error:', err);
     return false;
   }
 }
@@ -1539,15 +1566,14 @@ async function checkBarcodeDetectorQrSupport() {
 async function determineQrCapabilities() {
   const detectorWorks = await checkBarcodeDetectorQrSupport();
   const cameraAvailable = await checkCameraSupport();
-  const isSecureContext = window.isSecureContext === true;
-  const canAccessCamera = cameraAvailable && (isSecureContext || location.protocol === 'https:' || 
-                          location.hostname === 'localhost' || location.hostname === '127.0.0.1');
   
   // Upload QR: butuh BarcodeDetector support QR
   qrSupport.upload = detectorWorks;
   
-  // Camera: butuh BarcodeDetector + kamera tersedia + secure context
-  qrSupport.camera = detectorWorks && canAccessCamera;
+  // Camera: butuh BarcodeDetector + kamera tersedia (atau potensial ada)
+  qrSupport.camera = detectorWorks && cameraAvailable;
+  
+  console.log('QR Support - Camera:', qrSupport.camera, 'Upload:', qrSupport.upload);
   
   // Tampilkan/sembunyikan tombol berdasarkan hasil deteksi
   updateQrButtonsVisibility();
@@ -1559,12 +1585,14 @@ function updateQrButtonsVisibility() {
   const startQrButton = document.getElementById('startQrBtn');
   const uploadQrButton = document.getElementById('uploadQrBtn');
   const qrActionsDiv = document.getElementById('qrActions');
+  const qrStatusDiv = document.getElementById('qrStatus');
   
   // Kasus 1: Tidak support kamera & tidak support upload -> tombol QR HILANG TOTAL
   if (!qrSupport.camera && !qrSupport.upload) {
     if (openQrButton) openQrButton.style.display = 'none';
     if (qrActionsDiv) qrActionsDiv.style.display = 'none';
-    if (qrStatus) qrStatus.innerHTML = '❌ Browser tidak mendukung scan QR. Silakan masukkan kode voucher secara manual.';
+    if (qrStatusDiv) qrStatusDiv.innerHTML = '❌ Browser tidak mendukung scan QR. Silakan masukkan kode voucher secara manual.';
+    console.log('Mode: Tidak ada fitur QR sama sekali');
     return;
   }
   
@@ -1574,7 +1602,8 @@ function updateQrButtonsVisibility() {
     if (startQrButton) startQrButton.style.display = 'none';
     if (uploadQrButton) uploadQrButton.style.display = 'flex';
     if (qrActionsDiv) qrActionsDiv.style.display = 'flex';
-    if (qrStatus) qrStatus.innerHTML = '📷 Kamera tidak tersedia/diblokir. Gunakan tombol "Upload QR" untuk membaca voucher dari gambar.';
+    if (qrStatusDiv) qrStatusDiv.innerHTML = '📷 Kamera tidak tersedia/diblokir. Gunakan tombol "Upload QR" untuk membaca voucher dari gambar.';
+    console.log('Mode: Hanya Upload QR');
     return;
   }
   
@@ -1584,7 +1613,8 @@ function updateQrButtonsVisibility() {
     if (startQrButton) startQrButton.style.display = 'flex';
     if (uploadQrButton) uploadQrButton.style.display = 'flex';
     if (qrActionsDiv) qrActionsDiv.style.display = 'flex';
-    if (qrStatus) qrStatus.innerHTML = '🎥 Arahkan kamera ke QR code voucher. Begitu kebaca, voucher langsung keisi dan auto login.';
+    if (qrStatusDiv) qrStatusDiv.innerHTML = '🎥 Arahkan kamera ke QR code voucher. Begitu kebaca, voucher langsung keisi dan auto login.';
+    console.log('Mode: Lengkap (Kamera + Upload)');
     return;
   }
 }
@@ -1596,7 +1626,8 @@ async function startQrScanner() {
     return;
   }
   
-  if (!window.isSecureContext) {
+  if (!window.isSecureContext && location.protocol !== 'https:' && 
+      location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
     setQrStatus('Kamera butuh HTTPS atau localhost. Kalau masih HTTP biasa, kamera gak bisa dibuka.');
     return;
   }
@@ -1668,8 +1699,18 @@ async function startQrScanner() {
     scanQrFrame();
   } catch (error) {
     console.error('Camera error:', error);
-    setQrStatus('❌ Kamera gagal dibuka. Pastikan izin kamera diaktifkan lalu coba lagi. Atau pakai Upload QR.');
-    qrSupport.camera = false;
+    let errorMsg = '❌ Kamera gagal dibuka. ';
+    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+      errorMsg += 'Izin kamera ditolak. Coba berikan izin kamera di browser, atau pakai Upload QR.';
+      // Update status bahwa kamera tidak bisa dipakai karena ditolak
+      qrSupport.camera = false;
+    } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+      errorMsg += 'Tidak ada kamera yang terdeteksi di perangkat ini.';
+      qrSupport.camera = false;
+    } else {
+      errorMsg += 'Pastikan izin kamera diaktifkan lalu coba lagi. Atau pakai Upload QR.';
+    }
+    setQrStatus(errorMsg);
     updateQrButtonsVisibility();
   }
 }
